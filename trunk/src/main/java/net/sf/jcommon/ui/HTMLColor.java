@@ -168,27 +168,24 @@ public enum HTMLColor {
         return "#" + toHex(color.getRed()) + toHex(color.getGreen()) + toHex(color.getBlue());
     }
 
-    private static String toHex(int i) {
-        String s = Integer.toHexString(i);
-        if (s.length() == 1)
-            return "0" + s;
-        return s;
-    }
-
     /**
      * Returns a RGB value from the given HTML string value.
      *
      * @param name can have the following formats
-     *              <ul>
-     *              <li><strong>#rrggbb</strong>, where rr, gg and bb are hex digits
-     *              representing the red, green and blue component</li>
-     *              <li><strong>rrggbb</strong>, where rr, gg and bb are hex digits
-     *              representing the red, green and blue component</li>
-     *              <li><strong>name</strong>, where name represents the HTML color name.</li>
-     *              </ul>
+     * 	<ul>
+     * 		<li><strong>#rrggbb</strong>, where rr, gg and bb are hex digits
+     * 			representing the red, green and blue component</li>
+     *      <li><strong>rrggbb</strong>, where rr, gg and bb are hex digits
+     *          representing the red, green and blue component</li>
+     *      <li><strong>#rgb</strong>, where rr, gg and bb are hex digits
+     *          representing the red, green and blue component</li>
+     *      <li><strong>rgb</strong>, where rr, gg and bb are hex digits
+     *          representing the red, green and blue component</li>
+     *      <li><strong>name</strong>, where name represents the HTML color name.</li>
+     * </ul>
      * @return the RGB value
      * @throws IllegalArgumentException if the color name is not recognized or the value
-     *                                  contains invalid digits or the number of digits is less than 6.
+     * 		contains invalid digits or the number of digits is not 3 or 6.
      */
     public static Color forName(String name) {
         try {
@@ -199,15 +196,29 @@ public enum HTMLColor {
             if (name.charAt(0) == '#') {
                 start++;
             }
-            if (start + 6 < name.length())
-                throw new IllegalArgumentException("String color value too small. It must have at least six hexdigits");
-            for (int i = 0; i < 6; i++) {
-                rgb = (rgb << 4) + hexDigitValue(name.charAt(i + start));
+            if (start + 3 == name.length()) {
+                for (int i = 0; i < 3; i++) {
+                	int digit = hexDigitValue(name.charAt(i + start));
+                    rgb = (rgb << 4) + digit;
+                    rgb = (rgb << 4) + digit;
+                }            	
             }
-            return new Color(rgb);
+            
+            if (start + 6 == name.length()) {
+                for (int i = 0; i < 6; i++) {
+                	int digit = hexDigitValue(name.charAt(i + start));
+                    rgb = (rgb << 4) + digit;
+                }            	            	
+            }
+            	
+            throw new IllegalArgumentException("String color value too small. It must have three or six hexdigits");
         }
     }
 
+    /**
+     * @param c a given color
+     * @return the HTMLColor value
+     */
     public static HTMLColor valueOf(Color c) {
         for (HTMLColor hc : values()) {
             if (hc.getColor().equals(c))
@@ -216,8 +227,37 @@ public enum HTMLColor {
         return null;
     }
 
+    /** Given an HTML color returns the minimum size string representing that color. 
+     * @throws IllegalArgumentException if the color name is not recognized or the value
+     * 		contains invalid digits or the number of digits is not 3 or 6.
+     */
+    public static String getMinHTML(String value) {
+    	if (value.length() <= 3)
+    		return value;
+    	Color c = forName(value);
+    	HTMLColor hc = valueOf(c);
+    	if (hc != null && hc.name().length() < value.length())
+    		value = hc.name();
+    	if (value.length() <= 3)
+    		return value;
+    	String rgb = toHex(c.getRed()) + toHex(c.getGreen()) + toHex(c.getBlue());
+    	if (rgb.charAt(0) == rgb.charAt(1) && rgb.charAt(2) == rgb.charAt(3) && rgb.charAt(4) == rgb.charAt(5)) {
+    		rgb = new StringBuilder().append(rgb.charAt(0)).append(rgb.charAt(2)).append(rgb.charAt(4)).toString();
+    	}
+    	if (rgb.length() < value.length())
+    		value = "#" + rgb;
+    	return value;
+    }
+        
+    private static String toHex(int i) {
+        String s = Integer.toHexString(i);
+        if (s.length() == 1)
+            return "0" + s;
+        return s;
+    }
+
     /**
-     * @param hexDigit a hex digit, case insenssitive
+     * @param hexDigit a hex digit, case insensitive
      * @return the integer value for the given hex digit.
      */
     private static int hexDigitValue(char hexDigit) {
