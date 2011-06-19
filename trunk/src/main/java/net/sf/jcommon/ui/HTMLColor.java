@@ -202,16 +202,19 @@ public enum HTMLColor {
                     rgb = (rgb << 4) + digit;
                     rgb = (rgb << 4) + digit;
                 }            	
+                return new Color(rgb);
             }
             
             if (start + 6 == name.length()) {
                 for (int i = 0; i < 6; i++) {
                 	int digit = hexDigitValue(name.charAt(i + start));
                     rgb = (rgb << 4) + digit;
-                }            	            	
+                }   
+                return new Color(rgb);
             }
             	
-            throw new IllegalArgumentException("String color value too small. It must have three or six hexdigits");
+            throw new IllegalArgumentException(
+            		"String color value must have three or six hexdigits prefixed optionally with #");
         }
     }
 
