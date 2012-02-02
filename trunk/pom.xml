@@ -22,15 +22,6 @@
   </build>
   <dependencies>
 	<dependency>
-		<groupId>sun</groupId>
-		<artifactId>applet-jsobject</artifactId>
-		<version>1.6</version>
-		<optional>true</optional>
-		<!--scope>provided</scope-->
-		<scope>system</scope>
-		<systemPath>${java.home}/lib/plugin.jar</systemPath>
-	</dependency>
-	<dependency>
 		<groupId>com.jhlabs</groupId>
 		<artifactId>awt</artifactId>
 		<version>1.0</version>
