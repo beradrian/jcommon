@@ -10,7 +10,7 @@
 
 	<groupId>net.sf.jcommon</groupId>
 	<artifactId>jcommon</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>jcommon</name>
 	<description>jcommon</description>
@@ -36,9 +36,9 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:svn:https://jcommon.svn.sourceforge.net/svnroot/jcommon/tags/jcommon-1.0.0</connection>
-		<developerConnection>scm:svn:https://jcommon.svn.sourceforge.net/svnroot/jcommon/tags/jcommon-1.0.0</developerConnection>
-		<url>http://jcommon.svn.sourceforge.net/viewvc/jcommon/tags/jcommon-1.0.0</url>
+		<connection>scm:svn:https://jcommon.svn.sourceforge.net/svnroot/jcommon/trunk</connection>
+		<developerConnection>scm:svn:https://jcommon.svn.sourceforge.net/svnroot/jcommon/trunk</developerConnection>
+		<url>http://jcommon.svn.sourceforge.net/viewvc/jcommon/trunk</url>
 	</scm>
 	<build>
 		<plugins>
