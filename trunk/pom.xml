@@ -37,9 +37,9 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:svn:https://jcommon.svn.sourceforge.net/svnroot/jcommon</connection>
-		<developerConnection>scm:svn:https://jcommon.svn.sourceforge.net/svnroot/jcommon</developerConnection>
-		<url>http://jcommon.svn.sourceforge.net/viewvc/jcommon/</url>
+		<connection>scm:svn:https://jcommon.svn.sourceforge.net/svnroot/jcommon/trunk</connection>
+		<developerConnection>scm:svn:https://jcommon.svn.sourceforge.net/svnroot/jcommon/trunk</developerConnection>
+		<url>http://jcommon.svn.sourceforge.net/viewvc/jcommon/trunk</url>
 	</scm>
 	<distributionManagement>
 		<repository>
