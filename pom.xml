@@ -38,6 +38,7 @@
 	</developers>
 	<scm>
 		<connection>scm:svn:https://jcommon.svn.sourceforge.net/svnroot/jcommon</connection>
+		<developerConnection>scm:svn:https://jcommon.svn.sourceforge.net/svnroot/jcommon</developerConnection>
 		<url>http://jcommon.svn.sourceforge.net/viewvc/jcommon/</url>
 	</scm>
 	<distributionManagement>
