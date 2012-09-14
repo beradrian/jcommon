@@ -5,6 +5,8 @@ import java.text.*;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.google.common.collect.Iterators;
+
 /**
  */
 public class MessageResourceBundle extends ResourceBundle {
@@ -135,7 +137,7 @@ public class MessageResourceBundle extends ResourceBundle {
     }
 
     public Enumeration<String> getKeys() {
-        return new IteratorEnumeration<String>(resources.keySet().iterator());
+        return Iterators.asEnumeration(resources.keySet().iterator());
     }
 
     protected Object handleGetObject(String key) {

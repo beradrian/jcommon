@@ -8,7 +8,7 @@ import java.util.Iterator;
 /**
  * An iterator through the children of an XML element.
  */
-public class ChildrenIterator implements Iterator<Node> {
+class ChildrenIterator implements Iterator<Node> {
 
     /** The currently returned node by the iterator. */
     private Node child;

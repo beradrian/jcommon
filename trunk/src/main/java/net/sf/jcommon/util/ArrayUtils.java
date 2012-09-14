@@ -10,40 +10,6 @@ public class ArrayUtils {
     /** Use only the static methods. */
     private ArrayUtils() {}
 
-    /** Tests two arrays for equality.
-     * @param x the first array to be compared
-     * @param y the second array to be compared
-     * @return true if the arrays are equal, false otherwise.
-     */
-    public static boolean equals(byte[] x, byte[] y) {
-        if (x == null || y == null)
-            return x == y;
-        if (x.length == y.length) {
-            for (int i = 0; i < x.length; i++)
-                if (x[i] != y[i])
-                    return false;
-            return true;
-        }
-        return false;
-    }
-
-    /** Tests two arrays for equality.
-     * @param x the first array to be compared
-     * @param y the second array to be compared
-     * @return true if the arrays are equal, false otherwise.
-     */
-    public static boolean equals(int[] x, int[] y) {
-        if (x == null || y == null)
-            return x == y;
-        if (x.length == y.length) {
-            for (int i = 0; i < x.length; i++)
-                if (x[i] != y[i])
-                    return false;
-            return true;
-        }
-        return false;
-    }
-
     /** Returns a subarray of the given array.
      * @param x the initial array
      * @param startIndex the index of the first element in the subarray

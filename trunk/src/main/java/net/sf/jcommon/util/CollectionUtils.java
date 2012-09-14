@@ -15,7 +15,7 @@ public class CollectionUtils {
      * @param items the possible included elements in the first collection
      * @return true if the first collection contains any of the elements in the second collection, false otherwise
      */
-    public static <T> boolean containsAny(Collection<T> main, Collection<T> items) {
+    public static <T> boolean containsAny(Collection<T> main, Collection<? extends T> items) {
         for (T t : items) {
             if (main.contains(t))
                 return true;

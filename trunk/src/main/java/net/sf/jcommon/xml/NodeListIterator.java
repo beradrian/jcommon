@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
  * An iterator through a list of XML nodes. At creation it will receive a list of nodes and it will act as an iterator
  * through them.
  */
-public class NodeListIterator implements Iterator<Node> {
+class NodeListIterator implements Iterator<Node> {
 
     /** The iterated node list */
     private NodeList nodeList;

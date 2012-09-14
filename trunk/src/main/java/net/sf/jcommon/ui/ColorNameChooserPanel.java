@@ -10,6 +10,7 @@ import javax.swing.colorchooser.*;
  * @author Adrian Ber
  * @see HTMLColor
  */
+@SuppressWarnings("serial")
 public class ColorNameChooserPanel extends AbstractColorChooserPanel {
 
     /** The name of this color chooser panel; will appear as the tab name
@@ -20,7 +21,7 @@ public class ColorNameChooserPanel extends AbstractColorChooserPanel {
     private static final String CUSTOM = "<Custom>";
 
     /** The combo box filled with the HTML color names */
-    private JComboBox colorsComboBox = new JComboBox();
+    private JComboBox<HTMLColor> colorsComboBox = new JComboBox<HTMLColor>();
 
     /** Creates a new color chooser panel. */
     public ColorNameChooserPanel() {
@@ -50,7 +51,6 @@ public class ColorNameChooserPanel extends AbstractColorChooserPanel {
     /** Initializes this color chooser components. */
     protected void buildChooser() {
         setLayout(new BorderLayout());
-        colorsComboBox.addItem(CUSTOM);
         for (HTMLColor color : HTMLColor.values()) {
             colorsComboBox.addItem(color);
         }
@@ -58,7 +58,7 @@ public class ColorNameChooserPanel extends AbstractColorChooserPanel {
             public void itemStateChanged(ItemEvent ev) {
                 if (parent == null) return;
                 Object name = colorsComboBox.getSelectedItem();
-                if ((name != null) && (!name.toString().equals(CUSTOM))) {
+                if (name != null) {
                     parent.setColor(HTMLColor.forName(name.toString()));
                 }
             }

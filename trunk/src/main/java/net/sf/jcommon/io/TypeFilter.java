@@ -1,15 +1,11 @@
 package net.sf.jcommon.io;
 
-import net.sf.jcommon.util.Filter;
-
-import java.io.FileFilter;
 import java.io.File;
 
 /**
  * A filter for different types of files.
- * @author Adrian BER
  */
-public class TypeFilter implements FileFilter, Filter<File> {
+public class TypeFilter extends FilePredicate {
     /** Accepts folders. */
     public static final int DIRECTORY = 1;
     /** Accepts files. */
@@ -39,7 +35,7 @@ public class TypeFilter implements FileFilter, Filter<File> {
         this.types = types;
     }
 
-    public boolean accept(File file) {
+    public boolean apply(File file) {
         if (!file.exists())
             return true;
         int mask = (file.isDirectory() ? DIRECTORY : 0)

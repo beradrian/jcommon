@@ -5,16 +5,17 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * A combobox model that uses a Collection instead of a Vector to store the elements.
+ * A combo-box model that uses a Collection instead of a Vector to store the elements.
  */
-public class CollectionComboBoxModel extends AbstractListModel implements MutableComboBoxModel, Serializable {
+@SuppressWarnings("serial")
+public class CollectionComboBoxModel<E> extends AbstractListModel<E> implements MutableComboBoxModel<E>, Serializable {
 
     /** The collection kept in sync with the list. */
-    private Collection originalObjects;
+    private Collection<E> originalObjects;
 
     /** The list used to store the elements. */
-    private List objects;
-    private Comparator comparator;
+    private List<E> objects;
+    private Comparator<E> comparator;
 
     /** The selected object. */
     private Object selectedObject;
@@ -25,7 +26,7 @@ public class CollectionComboBoxModel extends AbstractListModel implements Mutabl
      *
      * @param collection  a List object ...
      */
-    public CollectionComboBoxModel(Collection collection) {
+    public CollectionComboBoxModel(Collection<E> collection) {
         this(collection, null);
     }
 
@@ -35,9 +36,9 @@ public class CollectionComboBoxModel extends AbstractListModel implements Mutabl
      *
      * @param collection  a List object ...
      */
-    public CollectionComboBoxModel(Collection collection, Comparator comparator) {
+    public CollectionComboBoxModel(Collection<E> collection, Comparator<E> comparator) {
         originalObjects = collection;
-        objects = new ArrayList(collection);
+        objects = new ArrayList<E>(collection);
         this.comparator = comparator;
         if (this.comparator != null)
             Collections.sort(objects, comparator);
@@ -69,7 +70,7 @@ public class CollectionComboBoxModel extends AbstractListModel implements Mutabl
         return objects.size();
     }
 
-    public Object getElementAt(int index) {
+    public E getElementAt(int index) {
         if (index >= 0 && index < objects.size())
             return objects.get(index);
         else
@@ -79,13 +80,13 @@ public class CollectionComboBoxModel extends AbstractListModel implements Mutabl
     /**
      * Returns the index-position of the specified object in the list.
      * @param anObject
-     * @return an int representing the index position, where 0 is the first position
+     * @return an integer representing the index position, where 0 is the first position
      */
-    public int getIndexOf(Object anObject) {
+    public int getIndexOf(E anObject) {
         return objects.indexOf(anObject);
     }
 
-    public void addElement(Object anObject) {
+    public void addElement(E anObject) {
         objects.add(anObject);
         originalObjects.add(anObject);
         fireIntervalAdded(this, objects.size() - 1, objects.size() - 1);
@@ -94,7 +95,7 @@ public class CollectionComboBoxModel extends AbstractListModel implements Mutabl
         }
     }
 
-    public void insertElementAt(Object anObject,int index) {
+    public void insertElementAt(E anObject,int index) {
         objects.add(index, anObject);
         originalObjects.add(anObject);
         fireIntervalAdded(this, index, index);

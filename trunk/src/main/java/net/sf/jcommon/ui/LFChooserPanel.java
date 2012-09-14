@@ -10,12 +10,11 @@ import javax.swing.*;
  * look&amp;feel different from the current one you can call
  * {@link #needsUpdate}.
  *
- * @author Adrian Ber &lt;beradrian@yahoo.com&gt;
- * @version 1.0
  */
+@SuppressWarnings("serial")
 public class LFChooserPanel extends JPanel {
 
-    private JComboBox lfComboBox = new JComboBox();
+    private JComboBox<String> lfComboBox = new JComboBox<String>();
     private UIManager.LookAndFeelInfo[] lfs;
 
     public LFChooserPanel() {

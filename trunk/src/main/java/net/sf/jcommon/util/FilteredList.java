@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 
+import com.google.common.base.Predicate;
+
 /** A list for which the elements are filtered. 
  * If elements are not accepted by the associated filter then, 
  * depending on the tolerance level, either an exception is thrown or the elements are silently ignored. 
@@ -13,19 +15,19 @@ public class FilteredList<E> extends FilteredCollection<E> implements List<E> {
 	private List<E> decorated;
 	
 	/** Creates a new collection by decorating the given collection. */
-	public FilteredList(List<E> decorated, Filter<E> filter, ToleranceLevel level) {
-		super(decorated, filter, level);
+	public FilteredList(List<E> decorated, Predicate<? super E> predicate, UnaaceptanceAction level) {
+		super(decorated, predicate, level);
 		this.decorated = decorated;
 	}
 	
-	public FilteredList(List<E> decorated, Filter<E> filter) {
-		this(decorated, filter, ToleranceLevel.SILENT);
+	public FilteredList(List<E> decorated, Predicate<? super E> predicate) {
+		this(decorated, predicate, UnaaceptanceAction.SILENT);
 	}
 
 	@Override
 	public void add(int index, E e) {
-		if (!getFilter().accept(e)) {
-			if (getLevel() == ToleranceLevel.EXCEPTION)
+		if (!getPredicate().apply(e)) {
+			if (getLevel() == UnaaceptanceAction.EXCEPTION)
 				throw new IllegalArgumentException("The object cannot be added to the collection");
 		} else {
 			decorated.add(index, e);
@@ -34,11 +36,11 @@ public class FilteredList<E> extends FilteredCollection<E> implements List<E> {
 
 	@Override
 	public boolean addAll(int index, Collection<? extends E> c) {
-		Filter<E> filter = getFilter();
-		if (getLevel() == ToleranceLevel.SILENT) {
+		Predicate<? super E> predicate = getPredicate();
+		if (getLevel() == UnaaceptanceAction.SILENT) {
 			boolean retval = false;
 			for (E e : c) {
-				if (filter.accept(e)) {
+				if (predicate.apply(e)) {
 					retval = true;
 					decorated.add(index, e);
 					index++;
@@ -47,7 +49,7 @@ public class FilteredList<E> extends FilteredCollection<E> implements List<E> {
 			return retval;
 		} else {
 			for (E e : c) {
-				if (!filter.accept(e))
+				if (!predicate.apply(e))
 					throw new IllegalArgumentException("One of the objects cannot be added to the collection");
 			}
 			return decorated.addAll(index, c);
@@ -86,8 +88,8 @@ public class FilteredList<E> extends FilteredCollection<E> implements List<E> {
 
 	@Override
 	public E set(int index, E e) {
-		if (!getFilter().accept(e)) {
-			if (getLevel() == ToleranceLevel.EXCEPTION)
+		if (!getPredicate().apply(e)) {
+			if (getLevel() == UnaaceptanceAction.EXCEPTION)
 				throw new IllegalArgumentException("The object cannot be added to the collection");
 			else
 				return null;

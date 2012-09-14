@@ -15,14 +15,44 @@ public class CNP {
     /** The standard length of a CNP. */
     public static final int LENGTH = 13;
 
+    private static final DateFormat CNP_DATE_FORMAT = new SimpleDateFormat("yyMMdd");
+
+    private static byte[] CONTROL_VALUES = new byte[] {
+        2, 7, 9, 1, 4, 6, 3, 5, 8, 2, 7, 9
+    };
+
+    private static int[] getDigits(String cnp) {
+        int _cnp[] = new int[LENGTH];
+        for (int i = 0; i < LENGTH; i++) {
+            char c = cnp.charAt(i);
+            if (!Character.isDigit(c)) {
+                return null;
+            }
+            _cnp[i] = Character.digit(c, 10);
+        }
+        return _cnp;
+    }
+
+    private static int getControlSum(int[] twelveDigits) {
+        int k = 0;
+        for (int i = 0; i < 12; i++) {
+            k += CONTROL_VALUES[i] * twelveDigits[i];
+        }
+        k %= 11;
+        if (k == 10) {
+            k = 1;
+        }
+        return k;
+    }
+
+    public static boolean validate(String cnp) {
+    	return validateLength(cnp) && validateConsistency(cnp);
+    }
+    
     /** Returns if the given string represents a valid CNP conforming to length. */
     public static boolean validateLength(String cnp) {
         return cnp.length() == LENGTH;
     }
-
-    private static byte[] controlValues = new byte[] {
-        2, 7, 9, 1, 4, 6, 3, 5, 8, 2, 7, 9
-    };
 
     /** Returns if the given string represents a valid CNP conforming to the control sum. */
     public static boolean validateConsistency(String cnp) {
@@ -40,38 +70,12 @@ public class CNP {
         return true;
     }
 
-    private static int[] getDigits(String cnp) {
-        int _cnp[] = new int[LENGTH];
-        for (int i = 0; i < LENGTH; i++) {
-            char c = cnp.charAt(i);
-            if (!Character.isDigit(c)) {
-                return null;
-            }
-            _cnp[i] = Character.digit(c, 10);
-        }
-        return _cnp;
-    }
-
-    private static int getControlSum(int[] twelveDigits) {
-        int k = 0;
-        for (int i = 0; i < 12; i++) {
-            k += controlValues[i] * twelveDigits[i];
-        }
-        k %= 11;
-        if (k == 10) {
-            k = 1;
-        }
-        return k;
-    }
-
-    private static final DateFormat personalIdDateFormat = new SimpleDateFormat("yyMMdd");
-
     /** Returns if the given string represents a valid CNP for the given birthdate.
      * The 2nd and the 3rd digits represent the last two digits from the year birthdate,
      * the 4th and 5th represent the month and the 7th and 8th the day.
      */
     public static boolean validateBirthdate(String cnp, Date birthdate) {
-        return cnp.length() > 6 && cnp.substring(1, 7).equals(personalIdDateFormat.format(birthdate));
+        return cnp.length() > 6 && cnp.substring(1, 7).equals(CNP_DATE_FORMAT.format(birthdate));
     }
 
     /** Returns if the given string represents a valid CNP. */
@@ -100,7 +104,7 @@ public class CNP {
         } else {
             result.setCharAt(0, male ? '5' : '6');
         }
-        result.replace(1, 7, personalIdDateFormat.format(date));
+        result.replace(1, 7, CNP_DATE_FORMAT.format(date));
 
         result.replace(7, 9, new Integer(Math.abs(departmentId) % 100).toString());
         result.replace(9, 12, new Integer(Math.abs(orderId) % 1000).toString());

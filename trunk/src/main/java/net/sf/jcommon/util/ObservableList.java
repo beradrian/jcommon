@@ -70,7 +70,6 @@ public class ObservableList<E> extends ObservableCollection<E> implements List<E
 	}
 
 	public boolean addAll(int location, Collection<? extends E> c) {
-		// TODO implement with ListEvent
 		CollectionEvent<E> evt = new CollectionEvent<E>(this, c, CollectionEvent.Operation.ADD);
 		firePreEvent(evt);
 		boolean retval = decorated.addAll(location, c);
