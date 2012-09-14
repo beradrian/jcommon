@@ -17,16 +17,6 @@ public class ArrayUtilsTestCase {
         assertEquals("testBytesToShort1", 220, ArrayUtils.bytesToShort(buff, 1));
     }
 
-    @Test public void testEquals() {
-        assertTrue(ArrayUtils.equals(new byte[0], new byte[0]));
-        assertFalse(ArrayUtils.equals(new byte[0], new byte[1]));
-        assertTrue(ArrayUtils.equals(new byte[]{3}, new byte[]{3}));
-        assertFalse(ArrayUtils.equals(new byte[]{3}, new byte[]{4}));
-        assertTrue(ArrayUtils.equals(new byte[]{3, 7, 9}, new byte[]{3, 7, 9}));
-        assertFalse(ArrayUtils.equals(new byte[]{3, 7, 9}, new byte[]{3, 7, 9, 10}));
-        assertFalse(ArrayUtils.equals(new byte[]{3, 5, 9}, new byte[]{3, 7, 9}));
-    }
-
     @Test public void testSubArray() {
         assertNull(ArrayUtils.subArray(new byte[] {1, 2, 3}, 2, 0));
         assertNull(ArrayUtils.subArray(new byte[] {1, 2, 3}, 5, 7));
