@@ -80,8 +80,7 @@ public class ClassLoaderHelper {
         else if (path.getName().endsWith(".jar")
                 || path.getName().endsWith(".zip")) {
             try {
-                ZipFile z = new ZipFile(path);
-                for (Enumeration<? extends ZipEntry> e = z.entries(); e.hasMoreElements();) {
+                for (Enumeration<? extends ZipEntry> e = new ZipFile(path).entries(); e.hasMoreElements();) {
                     ZipEntry zent = e.nextElement();
                     if (!zent.isDirectory() && zent.getName().endsWith(".class")
                             && (zent.getName().indexOf('$') < 0)

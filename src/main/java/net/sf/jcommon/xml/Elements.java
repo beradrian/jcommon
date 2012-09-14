@@ -4,18 +4,27 @@ import java.util.Iterator;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 
 /**
  * Some utility methods for working with XML elements.
  */
-public class ElementHelper {
+public class Elements {
 
     /** Use only the static methods. */
-    private ElementHelper() {
+    private Elements() {
     }
 
+    public Iterator<Node> asIterator(NodeList nodeList) {
+    	return new NodeListIterator(nodeList);
+    }
+    
+    public Iterator<Node> getChildrenAsIterator(Element e) {
+    	return new ChildrenIterator(e);
+    }
+    
     /** Removes blank string elements from element x and its children.
      * @param x the XML element
      */
@@ -62,15 +71,6 @@ public class ElementHelper {
             x = x.getParentNode();
         }
         return x;
-    }
-
-    /** Replace a child in an element with a new element child.
-     * @param parent the XML parent element
-     * @param oldChild the XML old child element
-     * @param newChild the XML new child element
-     */
-    public static void replaceChild(Node parent, Node oldChild, Node newChild) {
-    	// TODO
     }
 
     /**

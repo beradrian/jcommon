@@ -7,21 +7,19 @@ import javax.swing.*;
 import java.util.List;
 
 /**
- * //todo: add description
- *
- * @author Iulian Stefanica (iulian.stefanica@greefsoftware.com)
  */
-public class ComboBoxModelGroup extends ListModelGroup implements ComboBoxModel {
-    private Object selectedObject;
+@SuppressWarnings("serial")
+public class ComboBoxModelGroup<E> extends ListModelGroup<E> implements ComboBoxModel<E> {
+    private E selectedObject;
 
     protected ComboBoxModelGroup() {
     }
 
-    public ComboBoxModelGroup(List models) {
+    public ComboBoxModelGroup(List<ListModel<E>> models) {
         super(models);
     }
 
-    public Object getSelectedItem() {
+    public E getSelectedItem() {
         return selectedObject;
     }
 
@@ -31,10 +29,11 @@ public class ComboBoxModelGroup extends ListModelGroup implements ComboBoxModel 
      *
      * @param anObject The combo box value or null for no selection.
      */
+    @Override
     public void setSelectedItem(Object anObject) {
         if ((selectedObject != null && !selectedObject.equals(anObject)) ||
                 selectedObject == null && anObject != null) {
-            selectedObject = anObject;
+            selectedObject = (E)anObject;
             fireContentsChanged(this, -1, -1);
         }
     }

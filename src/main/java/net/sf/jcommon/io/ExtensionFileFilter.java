@@ -1,13 +1,10 @@
 package net.sf.jcommon.io;
 
-import net.sf.jcommon.util.Filter;
-
-import java.io.FileFilter;
 import java.io.File;
 
 /**
  */
-public class ExtensionFileFilter implements FileFilter, Filter<File> {
+public class ExtensionFileFilter extends FilePredicate {
 
     private String[] extensions;
     private boolean matchCase;
@@ -21,7 +18,7 @@ public class ExtensionFileFilter implements FileFilter, Filter<File> {
         this.matchCase = matchCase;
     }
 
-    public boolean accept(File file) {
+    public boolean apply(File file) {
         for (String extension : extensions) {
             if (matchCase ? file.getName().endsWith(extension)
                     : file.getName().toLowerCase().endsWith(extension.toLowerCase()))
@@ -29,4 +26,5 @@ public class ExtensionFileFilter implements FileFilter, Filter<File> {
         }
         return false;
     }
+
 }

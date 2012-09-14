@@ -30,9 +30,9 @@ public class TableSearch extends JPanel {
 
     static {
         URL url;
-        url = TableSearch.class.getResource("img/searchup.gif");
+        url = TableSearch.class.getResource("searchup.gif");
         DEFAULT_UPARROW_ICON = (url != null ? new ImageIcon(url) : null);
-        url = TableSearch.class.getResource("img/searchdown.gif");
+        url = TableSearch.class.getResource("searchdown.gif");
         DEFAULT_DOWNARROW_ICON = (url != null ? new ImageIcon(url) : null);
     }
 

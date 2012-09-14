@@ -2,7 +2,7 @@ package net.sf.jcommon.ui.table;
 
 /**
  * An interface that has to be implemented by a column model for the ability to hide columns
- * {@link org.greensoft.ui.table.DisplayedColumnsMenu}.
+ * {@link net.sf.jcommon.ui.table.DisplayedColumnsMenu}.
  * If the column model doesn't implement this then all the columns are considered hideable.
  */
 public interface DisplayedColumnsModel {

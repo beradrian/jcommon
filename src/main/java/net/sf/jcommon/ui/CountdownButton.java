@@ -5,9 +5,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 /**
- * @author Ionut BARCAN
- * @author Adrian BER
  */
+@SuppressWarnings("serial")
 public class CountdownButton extends JButton {
 
     private Timer timer;

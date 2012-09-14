@@ -3,11 +3,11 @@ package net.sf.jcommon.util;
 import java.util.Calendar;
 
 /**
- * Calendar utiliy methods. Use only static methods.
- * @author Adrian BER
+ * Calendar utiliy methods. 
  */
 public class CalendarUtils {
 
+	/** Use only static methods. */
     private CalendarUtils() {}
 
     /** Returns the difference in days between the two calendars.

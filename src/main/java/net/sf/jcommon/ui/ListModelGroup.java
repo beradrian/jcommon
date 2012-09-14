@@ -9,32 +9,31 @@ import java.util.List;
 
 /**
  * List model formed by grouping more other ComboBox models.
- *
- * @author Iulian Stefanica (iulian.stefanica@greefsoftware.com)
  */
-public class ListModelGroup extends AbstractListModel {
-    private List models = new ArrayList();
+@SuppressWarnings("serial")
+public class ListModelGroup<E> extends AbstractListModel<E> {
+    private List<ListModel<E>> models = new ArrayList<ListModel<E>>();
 
     protected ListModelGroup() {
     }
 
-    public ListModelGroup(List models) {
+    public ListModelGroup(List<ListModel<E>> models) {
         setModels(models);
     }
 
-    protected void setModels(List models) {
+    protected void setModels(List<ListModel<E>> models) {
         this.models = models;
     }
 
     public int getSize() {
         int size = 0;
         for (int i = models.size() - 1; i >= 0; i--) {
-            size += ((ListModel) models.get(i)).getSize();
+            size += models.get(i).getSize();
         }
         return size;
     }
 
-    public Object getElementAt(int index) {
+    public E getElementAt(int index) {
         long position = localize(index);
         return getModel((int) (position >> 32)).getElementAt((int) position);
     }
@@ -52,9 +51,9 @@ public class ListModelGroup extends AbstractListModel {
             throw new IllegalStateException("empty list of models");
         }
 
-        // offset = the begining of the current model where we search for the element.
+        // offset = the beginning of the current model where we search for the element.
         for (int i = 0, offset = 0; i < noOfModels; i++) {
-            ListModel model = getModel(i);
+            ListModel<E> model = getModel(i);
             int modelSize = model.getSize();
 
             //if index is between the offset and the end of the current model, the element is in
@@ -63,7 +62,7 @@ public class ListModelGroup extends AbstractListModel {
                 return (((long) i) << 32) + (index - offset);
             }
 
-            //otherwise move the offset at the begining of the next model.
+            //otherwise move the offset at the beginning of the next model.
             offset += modelSize;
         }
 
@@ -76,7 +75,7 @@ public class ListModelGroup extends AbstractListModel {
      * @param modelIndex The index of the model.
      * @return The model at the specified index from the group.
      */
-    private ListModel getModel(int modelIndex) {
-        return (ListModel) models.get(modelIndex);
+    private ListModel<E> getModel(int modelIndex) {
+        return models.get(modelIndex);
     }
 }
