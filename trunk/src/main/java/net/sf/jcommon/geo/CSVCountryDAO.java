@@ -2,6 +2,7 @@ package net.sf.jcommon.geo;
 
 import java.io.*;
 import java.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,11 +10,10 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 
-public class CSVCountryDAO extends CachedCountryDAO {
+public class CSVCountryDAO extends AbstractCountryDAO {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CSVCountryDAO.class);
 
-	@Override
 	protected Collection<Country> loadCountries() throws IOException {
     	char columnSeparator = ',';
     	// open the resource file to read country information
@@ -210,5 +210,15 @@ public class CSVCountryDAO extends CachedCountryDAO {
 			throw new IllegalStateException("This iterator does not support remove");
 		}
     }
+
+	@Override
+	public Collection<Country> getAllCountries() {
+		try {
+			return loadCountries();
+		} catch (IOException exc) {
+			LOG.error("Error loading countries", exc);
+			return null;
+		}
+	}
 
 }

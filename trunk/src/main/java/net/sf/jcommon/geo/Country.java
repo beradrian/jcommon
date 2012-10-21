@@ -15,7 +15,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 @JsonDeserialize(using=CountryISOJsonDeserializer.class, as=String.class)
 public final class Country {
 	
-	private static final CountryDAO DEFAULT = new CSVCountryDAO();
+	private static final CountryDAO DEFAULT = new CachedCountryDAO(new CSVCountryDAO());
 	
 	public static CountryDAO getCountries() {
 		return DEFAULT;
@@ -41,9 +41,9 @@ public final class Country {
 
 		public int compare(Country c1, Country c2) {
             return c1 == null ? (c2 == null ? 0 : -1) 
-            		: (c2 == null ? 1 : (c1.getDisplayName(language) == null 
-            				? (c2.getDisplayName(language) == null ? 0 : -1) 
-            			: c1.getDisplayName(language).compareTo(c2.getDisplayName(language))));
+            		: (c2 == null ? 1 : (c1.getLocalizedName(language) == null 
+            				? (c2.getLocalizedName(language) == null ? 0 : -1) 
+            			: c1.getLocalizedName(language).compareTo(c2.getLocalizedName(language))));
             		
         }
     }
@@ -71,14 +71,14 @@ public final class Country {
     private String[] locales;
     private String[] defaultForLanguages;
     private String region;
-    private Map<String, String> displayNames = new HashMap<String, String>();
+    private Map<String, String> localizedNames = new HashMap<String, String>();
 
     Country() {}
     
     Country(String name, String ISO2, String ISO3, Integer ISOnumeric, String IANA, String ITU, 
     		String UNvehicle, String IOC, String FIPS, String FIFA, String DS, String WMO, String MARC,
     		String region, String[] locales, String[] defaultForLanguages,
-    		Map<String, String> displayNames) {
+    		Map<String, String> localizedNames) {
         this.name = name;
         this.ISO2 = ISO2;
         this.ISO3 = ISO3;
@@ -97,7 +97,7 @@ public final class Country {
         this.locales = locales;
         this.defaultForLanguages = defaultForLanguages;
         
-        this.displayNames = displayNames;
+        this.localizedNames = localizedNames;
     }
 
     public String getName() {
@@ -211,13 +211,13 @@ public final class Country {
 		return that instanceof Country && ISO2.equals(((Country)that).ISO2);
 	}
 
-	public String getDisplayName(String language) {
-    	String displayName = displayNames.get(language.toLowerCase());
+	public String getLocalizedName(String language) {
+    	String displayName = localizedNames.get(language.toLowerCase());
     	return (displayName == null ? name : displayName);
     }
     
-    public static String getDisplayName(Country country, String language) {
-    	return country.getDisplayName(language);
+    public static String getLocalizedName(Country country, String language) {
+    	return country.getLocalizedName(language);
     }
     
 }

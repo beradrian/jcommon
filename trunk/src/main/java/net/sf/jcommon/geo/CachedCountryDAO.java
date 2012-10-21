@@ -1,13 +1,11 @@
 package net.sf.jcommon.geo;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
 
-public abstract class CachedCountryDAO implements CountryDAO {
+public class CachedCountryDAO extends AbstractCountryDAO {
 
+	private CountryDAO decoratedDAO;
+	
     /** The countries list. */
     private Collection<Country> allCountries = null;
     /** The countries list having an ISO code assigned. */
@@ -21,12 +19,15 @@ public abstract class CachedCountryDAO implements CountryDAO {
     /** Countries mapped by region */
     private Map<String, Collection<Country>> region2Countries; 
 
-    private void initCountries() {
-    	Collection<Country> countries;
-		try {
-			countries = loadCountries();
-		} catch (IOException e) {
-			throw new IllegalStateException("Cannot load countries list", e);
+    public CachedCountryDAO(CountryDAO decoratedDAO) {
+		this.decoratedDAO = decoratedDAO;
+	}
+
+	private void initCountries() {
+    	Collection<Country> countries = decoratedDAO.getAllCountries();
+		
+		if (countries == null) {
+			countries = new HashSet<Country>();
 		}
     	
         allCountries = new TreeSet<Country>(new Country.NameComparator());
@@ -62,19 +63,12 @@ public abstract class CachedCountryDAO implements CountryDAO {
         }
     }
     
-    protected abstract Collection<Country> loadCountries() throws IOException;
-    	
     @Override
 	public Collection<Country> getISOCountries() {
         if (isoCountries == null) {
             initCountries();
         }
         return isoCountries;
-    }
-
-    @Override
-	public Collection<Country> getCountries() {
-        return getISOCountries();
     }
 
     @Override
@@ -87,12 +81,13 @@ public abstract class CachedCountryDAO implements CountryDAO {
     
     @Override
 	public Collection<Country> getCountriesForRegion(String region) {
+    	if (region == null) {
+    		return null;
+    	}
+        if (region2Countries == null) {
+        	initCountries();
+        }
     	return region2Countries.get(region.toLowerCase());
-    }
-
-    @Override
-	public Country findByISO(String code) {
-        return findByISO2(code);
     }
 
     @Override
@@ -124,19 +119,6 @@ public abstract class CachedCountryDAO implements CountryDAO {
         	initCountries();
         }
         return name2country.get(name);
-    }
-
-    @Override
-	public Country findByISO3(String code) {
-        if (code == null || code.length() != 3)
-            return null;
-        code = code.toUpperCase();
-        for (Country country : getISOCountries()) {
-            if (code.equals(country.getISO3())) {
-                return country;
-            }
-        }
-        return null;
     }
 
 }
