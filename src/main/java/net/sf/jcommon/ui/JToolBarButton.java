@@ -1,14 +1,17 @@
 package net.sf.jcommon.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 
 /**
  * ToolBar button implementation.
- * @author BER
- * @version 1.0
  */
 public class JToolBarButton extends JButton {
 

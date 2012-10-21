@@ -5,14 +5,13 @@ import java.util.Enumeration;
 
 /**
  * An enumeration that goes through a ListModel.
- * @author Adrian BER (adrian.ber@greefsoftware.com)
  */
-public class ListModelEnumeration implements Enumeration {
+public class ListModelEnumeration<T> implements Enumeration<T> {
 
     private int index = 0;
-    private ListModel listModel;
+    private ListModel<T> listModel;
 
-    public ListModelEnumeration(ListModel listModel) {
+    public ListModelEnumeration(ListModel<T> listModel) {
         this.listModel = listModel;
     }
 
@@ -20,7 +19,7 @@ public class ListModelEnumeration implements Enumeration {
         return index < listModel.getSize();
     }
 
-    public Object nextElement() {
+    public T nextElement() {
         return listModel.getElementAt(index++);
     }
 }

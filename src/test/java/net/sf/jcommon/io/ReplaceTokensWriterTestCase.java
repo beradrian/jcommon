@@ -17,5 +17,6 @@ public class ReplaceTokensWriterTestCase {
         rtw.addToken("who", "world");
         rtw.write("Hello @who@");
         assertEquals("Hello world", sw.getBuffer().toString());
+        rtw.close();
     }
 }

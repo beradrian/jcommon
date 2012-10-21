@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<plugin>
+    <extension point="org.datanucleus.store_mapping">
+        <mapping java-type="net.sf.jcommon.geo.Country" mapping-class="net.sf.jcommon.geo.CountryMapping"/>
+    </extension>
+    <extension point="org.datanucleus.store_mapping">
+        <mapping java-type="[Ljava.lang.String;" mapping-class="net.sf.jcommon.persistence.StringsMapping"/>
+    </extension>
+</plugin>
