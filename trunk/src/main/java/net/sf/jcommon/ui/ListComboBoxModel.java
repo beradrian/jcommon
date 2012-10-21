@@ -9,10 +9,10 @@ import java.util.ArrayList;
  * A combobox model that uses a List instead of a Vector to store the elements.
  * @author Adrian BER
  */
-public class ListComboBoxModel extends AbstractListModel implements MutableComboBoxModel, Serializable {
+public class ListComboBoxModel<T> extends AbstractListModel<T> implements MutableComboBoxModel<T>, Serializable {
 
     /** The list used to store the elements. */
-    List objects;
+    List<T> objects;
 
     /** The selected object. */
     Object selectedObject;
@@ -21,7 +21,7 @@ public class ListComboBoxModel extends AbstractListModel implements MutableCombo
      * Constructs an empty DefaultComboBoxModel object.
      */
     public ListComboBoxModel() {
-        objects = new ArrayList();
+        objects = new ArrayList<T>();
     }
 
     /**
@@ -30,9 +30,8 @@ public class ListComboBoxModel extends AbstractListModel implements MutableCombo
      *
      * @param items  an array of Object objects
      */
-    public ListComboBoxModel(final Object items[]) {
-        objects = new ArrayList();
-        ((ArrayList)objects).ensureCapacity(items.length);
+    public ListComboBoxModel(final T... items) {
+        objects = new ArrayList<T>(items.length);
 
         int i,c;
         for (i=0, c=items.length; i < c; i++ )
@@ -49,7 +48,7 @@ public class ListComboBoxModel extends AbstractListModel implements MutableCombo
      *
      * @param v  a List object ...
      */
-    public ListComboBoxModel(List v) {
+    public ListComboBoxModel(List<T> v) {
         objects = v;
 
         if (getSize() > 0) {
@@ -79,7 +78,7 @@ public class ListComboBoxModel extends AbstractListModel implements MutableCombo
         return objects.size();
     }
 
-    public Object getElementAt(int index) {
+    public T getElementAt(int index) {
         if (index >= 0 && index < objects.size())
             return objects.get(index);
         else
@@ -95,7 +94,7 @@ public class ListComboBoxModel extends AbstractListModel implements MutableCombo
         return objects.indexOf(anObject);
     }
 
-    public void addElement(Object anObject) {
+    public void addElement(T anObject) {
         objects.add(anObject);
         fireIntervalAdded(this, objects.size() - 1, objects.size() - 1);
         if (objects.size() == 1 && selectedObject == null && anObject != null) {
@@ -103,7 +102,7 @@ public class ListComboBoxModel extends AbstractListModel implements MutableCombo
         }
     }
 
-    public void insertElementAt(Object anObject,int index) {
+    public void insertElementAt(T anObject,int index) {
         objects.add(index, anObject);
         fireIntervalAdded(this, index, index);
     }

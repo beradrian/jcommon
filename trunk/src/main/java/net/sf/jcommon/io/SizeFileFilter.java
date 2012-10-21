@@ -1,9 +1,6 @@
 package net.sf.jcommon.io;
 
-import java.io.FileFilter;
 import java.io.File;
-
-import com.google.common.base.Predicate;
 
 /**
  * A file filter that accepts files which size is between a minimum and a maximum specified limit.
