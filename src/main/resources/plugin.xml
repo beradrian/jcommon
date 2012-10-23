@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
-<plugin>
-    <extension point="org.datanucleus.store_mapping">
-        <mapping java-type="net.sf.jcommon.geo.Country" mapping-class="net.sf.jcommon.geo.CountryMapping"/>
-    </extension>
-    <extension point="org.datanucleus.store_mapping">
-        <mapping java-type="[Ljava.lang.String;" mapping-class="net.sf.jcommon.persistence.StringsMapping"/>
+<plugin id="net.sf.jcommon">
+    <extension point="org.datanucleus.java_type">
+        <java-type name="net.sf.jcommon.geo.Country" string-converter="net.sf.jcommon.geo.CountryStringConverter" 
+            persistent="true" dfg="true" embedded="true"/>
+        <java-type name="[Ljava.lang.String;" string-converter="net.sf.jcommon.persistence.ArrayOfStringsToStringConverter" 
+            persistent="true" dfg="false" embedded="true" priority="10" />
     </extension>
 </plugin>
