@@ -240,7 +240,8 @@ public class XProperties extends Properties {
      * @param writer the writer where to save the properties
      */
     public void save(Writer writer) {
-        PrintWriter pw = writer instanceof PrintWriter ? (PrintWriter)writer : new PrintWriter(writer);
+        @SuppressWarnings("resource")
+		PrintWriter pw = writer instanceof PrintWriter ? (PrintWriter)writer : new PrintWriter(writer);
         Enumeration<?> e = propertyNames();
         while (e.hasMoreElements()) {
             String name = (String)e.nextElement();
