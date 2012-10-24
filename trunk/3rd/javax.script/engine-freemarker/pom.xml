@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<!-- just run 'mvn clean scm:checkout install' to install the FreeMarker ScriptEngine -->
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>javax.script</groupId>
+	<artifactId>engine-freemarker</artifactId>
+	<packaging>jar</packaging>
+	<version>1.0</version>
+	<name>FreeMarker ScriptEngine</name>
+	<url>http://java.net/projects/scripting</url>
+	<properties>
+		<checkout.dir>${basedir}/target/checkout</checkout.dir>
+	</properties>
+	<scm>
+		<connection>scm:svn:https://svn.java.net/svn/scripting~svn/trunk/engines/freemarker</connection>
+		<developerConnection>scm:svn:https://svn.java.net/svn/scripting~svn/trunk/engines/freemarker</developerConnection>
+		<url>http://java.net/projects/scripting/sources/svn/show</url>
+	</scm>
+	<dependencies>
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>2.3.19</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<resources>
+			<resource>
+				<directory>${checkout.dir}/src/META-INF</directory>
+				<targetPath>${basedir}/target/classes/META-INF</targetPath>
+				<filtering>false</filtering>
+				<includes>
+					<include>**/*</include>
+				</includes>
+				<excludes>
+					<exclude>**/pom.*</exclude>
+				</excludes>
+			</resource>
+		</resources>
+		<sourceDirectory>${checkout.dir}/src</sourceDirectory>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-scm-plugin</artifactId>
+				<version>1.8</version>
+				<configuration>
+					<connectionType>connection</connectionType>
+					<goals>install</goals>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
