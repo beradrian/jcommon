@@ -2,39 +2,23 @@ package net.sf.jcommon.io;
 
 import java.io.File;
 
+import com.google.common.base.Predicate;
+
 /**
- * A file filter that accepts files which size is between a minimum and a maximum specified limit.
+ * A file filter that accepts files based on the size.
+ * If you want to accept files with size in a given range
+ * {@code new SizeFileFilter(Range.closed(min, max))}
  */
 public class SizeFileFilter extends FilePredicate {
 
-    private long minimumSize = Long.MIN_VALUE, maximumSize = Long.MAX_VALUE;
-
-    public SizeFileFilter() {
-    }
-
-    public long getMinimumSize() {
-        return minimumSize;
-    }
-
-    public long getMaximumSize() {
-        return maximumSize;
-    }
-
-    public void setMinimumSize(long value) {
-        minimumSize = value;
-    }
-
-    public void setMaximumSize(long value) {
-        maximumSize = value;
-    }
+	private Predicate<Long> sizeFilter;
+	
+    public SizeFileFilter(Predicate<Long> sizeFilter) {
+		this.sizeFilter = sizeFilter;
+	}
 
     public boolean apply(File pathname) {
-        long size = pathname.length();
-        return (size >= minimumSize) && (size <= maximumSize);
-    }
-
-    public String toString() {
-        return getClass().getName() + "(" + minimumSize + "," + maximumSize + ")";
+        return sizeFilter.apply(pathname.length());
     }
 
 }
