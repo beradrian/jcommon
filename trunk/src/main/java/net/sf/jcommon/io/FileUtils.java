@@ -1,11 +1,8 @@
 package net.sf.jcommon.io;
 
 import java.io.*;
-import java.net.URL;
 
 public class FileUtils {
-
-    private static final int BUFFER_SIZE = 10 * 1024;
 
     /**
      * Use only it's static methods.
@@ -93,41 +90,6 @@ public class FileUtils {
         } else {
             return 1;
         }
-    }
-
-    /**
-     * Includes a resource into a writer stream.
-     *
-     * @param url the URL to the resource
-     * @param out the writer to which is included the resource
-     * @throws java.io.IOException if an error occurs
-     */
-    public static void includeResource(URL url, Writer out) throws IOException {
-        char[] buff = new char[BUFFER_SIZE];
-        Reader in = new InputStreamReader(url.openStream());
-        int readed = 0;
-        do {
-            readed = in.read(buff);
-            if (readed > 0) {
-                out.write(buff, 0, readed);
-            }
-        } while (readed > 0);
-        in.close();
-    }
-
-    /**
-     * Get the contents of an URL stream as a string.
-     *
-     * @param url the url
-     * @return the content as string
-     * @throws java.io.IOException if an error occurs
-     */
-    public static String getResourceAsString(URL url) throws IOException {
-        ByteArrayOutputStream buff = new ByteArrayOutputStream();
-        Writer out = new OutputStreamWriter(buff);
-        includeResource(url, out);
-        out.close();
-        return new String(buff.toByteArray());
     }
 
 }
