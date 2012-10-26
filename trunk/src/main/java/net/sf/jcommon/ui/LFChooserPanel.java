@@ -14,7 +14,7 @@ import javax.swing.*;
 @SuppressWarnings("serial")
 public class LFChooserPanel extends JPanel {
 
-    private JComboBox<String> lfComboBox = new JComboBox<String>();
+    private JComboBox lfComboBox = new JComboBox();
     private UIManager.LookAndFeelInfo[] lfs;
 
     public LFChooserPanel() {

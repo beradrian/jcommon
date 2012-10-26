@@ -33,7 +33,7 @@ public class StringsMapping extends ObjectAsStringMapping {
 		if (joinMetaData == null)
 			return DEFAULT_SEPARATOR;
 		String joinColumnName = joinMetaData.getColumnName();
-		if (joinColumnName == null || joinColumnName.trim().isEmpty())
+		if (joinColumnName == null || joinColumnName.trim().length() == 0)
 			return DEFAULT_SEPARATOR;
 		return joinColumnName;
 	}
@@ -63,10 +63,10 @@ public class StringsMapping extends ObjectAsStringMapping {
 	protected Object stringToObject(String datastoreValue) {
 		if (datastoreValue == null)
 			return null;
-		if (datastoreValue.isEmpty())
+		if (datastoreValue.length() == 0)
 			return new String[0];
 		// if the first character is not an alphabetic one, maybe the object was serialized
-		if (!Character.isAlphabetic(datastoreValue.codePointAt(0))) {
+		if (!Character.isUnicodeIdentifierStart(datastoreValue.codePointAt(0))) {
 			try {
 				ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(datastoreValue.getBytes()));
 				Object value = in.readObject();

@@ -30,11 +30,11 @@ public class CSVCountryDAO extends AbstractCountryDAO {
 			}
 			in = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 		} catch (UnsupportedEncodingException exc) {
-            LOG.warn("The resource file containing the countries list is not correctly encoded. The library might be corrupted.");
-			throw new IOException("The resource file containing the countries list is not correctly encoded. The library might be corrupted.", exc);
+            LOG.warn("The resource file containing the countries list is not correctly encoded. The library might be corrupted.", exc);
+			throw new IOException("The resource file containing the countries list is not correctly encoded. The library might be corrupted.");
 		} catch (NullPointerException exc) {
-            LOG.warn("The resource file containing the countries list cannot be found. The library might be corrupted.");
-            throw new IOException("The resource file containing the countries list cannot be found. The library might be corrupted.", exc);
+            LOG.warn("The resource file containing the countries list cannot be found. The library might be corrupted.", exc);
+            throw new IOException("The resource file containing the countries list cannot be found. The library might be corrupted.");
         }
 		
 		Collection<Country> countries = new HashSet<Country>();
