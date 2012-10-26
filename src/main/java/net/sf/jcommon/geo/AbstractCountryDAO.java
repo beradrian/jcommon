@@ -9,7 +9,7 @@ public abstract class AbstractCountryDAO implements CountryDAO {
 	public Collection<Country> getISOCountries() {
 		Collection<Country> countries = new HashSet<Country>(); 
         for (Country country : getAllCountries()) {
-            if (country.getISO() != null && !country.getISO().isEmpty()) {
+            if (country.getISO() != null && country.getISO().length() > 0) {
                 countries.add(country);
             }
         }
