@@ -216,8 +216,8 @@ public final class Country {
     	return (displayName == null ? name : displayName);
     }
     
+	/** To be used in JSTL as custom function. */
     public static String getLocalizedName(Country country, String language) {
     	return country.getLocalizedName(language);
     }
-    
 }
