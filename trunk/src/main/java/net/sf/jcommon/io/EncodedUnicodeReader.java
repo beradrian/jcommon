@@ -3,9 +3,9 @@ package net.sf.jcommon.io;
 import java.io.IOException;
 import java.io.Reader;
 
-/**
- * @author Adrian BER
- */
+import org.springframework.context.annotation.DependsOn;
+
+@Deprecated
 public class EncodedUnicodeReader extends Reader {
 
     private Reader reader;
