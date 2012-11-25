@@ -1,6 +1,6 @@
 package net.sf.jcommon.io;
 
-import org.junit.*;
+//import org.junit.*;
 import static org.junit.Assert.*;
 
 import java.io.StringReader;
@@ -12,7 +12,7 @@ public class EncodedUnicodeReaderTestCase {
 
     private EncodedUnicodeReader reader;
 
-    @Before
+//    @Before
     public void setUp() throws Exception {
         reader = new EncodedUnicodeReader(new StringReader("Testing \\u0103unicode\\tspecial ch\\u0103ar"));
     }
