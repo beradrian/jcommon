@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
-<plugin id="net.sf.jcommon">
-    <extension point="org.datanucleus.java_type">
-        <java-type name="net.sf.jcommon.geo.Country" string-converter="net.sf.jcommon.geo.CountryStringConverter" 
-            persistent="true" dfg="true" embedded="true"/>
-        <java-type name="[Ljava.lang.String;" string-converter="net.sf.jcommon.persistence.ArrayOfStringsToStringConverter" 
-            persistent="true" dfg="false" embedded="true" priority="10" />
+<plugin id="net.sf.jcommon" name="DataNucleus plug-ins" provider-name="jcommon">
+    <extension point="org.datanucleus.type_converter">
+        <type-converter name="dn.country-string" member-type="net.sf.jcommon.geo.Country" 
+        	datastore-type="java.lang.String"
+            converter-class="net.sf.jcommon.geo.CountryStringConverter" />
+        <type-converter name="dn.strings-string" member-type="[Ljava.lang.String;" 
+        	datastore-type="java.lang.String"
+            converter-class="net.sf.jcommon.persistence.ArrayOfStringsToStringConverter" />
     </extension>
 </plugin>
