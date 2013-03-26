@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: net.sf.jcommon
+Bundle-Name: jcommon
 Bundle-SymbolicName: net.sf.jcommon
 Bundle-Version: 1.0.1
 Bundle-Vendor: Adrian Ber

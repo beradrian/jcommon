@@ -7,8 +7,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.FocusListener;
 import java.awt.event.FocusEvent;
 
-/**
- */
+@SuppressWarnings("serial")
 public class TransparentWindow extends JWindow implements MouseMotionListener, FocusListener {
     Graphics tempImgGraphics;
     Image backgroundImage, temporaryImage;

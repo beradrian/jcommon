@@ -1,5 +1,7 @@
 package net.sf.jcommon.geo;
 
+import java.util.Comparator;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -19,5 +21,11 @@ public class CountryTestCase {
 	@Test
 	public void testGetByRegion() {
         assertTrue(Country.getCountries().getCountriesForRegion("emea").size() > 3);		
+	}
+	
+	@Test
+	public void testDisplayNameComparator() {
+		Comparator<Country> comp = new Country.DisplayNameComparator("de");
+        assertTrue(comp.compare(Country.getCountries().findByISO("ro"), Country.getCountries().findByISO("vn")) < 0);		
 	}
 }

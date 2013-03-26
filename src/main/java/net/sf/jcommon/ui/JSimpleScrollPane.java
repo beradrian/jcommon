@@ -7,9 +7,7 @@ import javax.swing.event.ChangeEvent;
 import java.awt.*;
 import java.awt.event.*;
 
-/**
- * @author Adrian BER
- */
+@SuppressWarnings("serial")
 public class JSimpleScrollPane extends JComponent {
 
     public static final int ALWAYS = 1;

@@ -3,8 +3,6 @@ package net.sf.jcommon.io;
 import java.io.IOException;
 import java.io.Reader;
 
-import org.springframework.context.annotation.DependsOn;
-
 @Deprecated
 public class EncodedUnicodeReader extends Reader {
 

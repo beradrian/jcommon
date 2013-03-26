@@ -7,10 +7,8 @@ import java.awt.event.*;
 /**
  * A class to provide two buttons (<b>OK</b> and <b>Cancel</b> on a dialog.
  * The buttons must be put on the dialog by the class that extends this class.
- *
- * @author Adrian Ber
  */
-
+@SuppressWarnings("serial")
 public class OKCancelDialog extends JDialog {
     public static final int PADDING = 3;
 
