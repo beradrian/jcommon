@@ -5,7 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import net.sf.jcommon.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+
 
 /**
  * Utility methods for working with beans.
@@ -67,8 +68,8 @@ public class BeanUtils {
 	 * @return the getter method, or null if not found
 	 */
 	public static Method getGetterMethod(Object bean, String property) {
-		String getterName = "get" + StringUtils.toTitleCase(property);
-		String booleanGetterName = "is" + StringUtils.toTitleCase(property);
+		String getterName = "get" + StringUtils.capitalize(property);
+		String booleanGetterName = "is" + StringUtils.capitalize(property);
 		for (Method m : bean.getClass().getMethods()) {
 			if ((getterName.equals(m.getName()) || (booleanGetterName.equals(m.getName()))) 
 					&& m.getParameterTypes().length == 1) {
@@ -85,7 +86,7 @@ public class BeanUtils {
 	 * @return the setter method, or null if not found
 	 */
 	public static Method getSetterMethod(Object bean, String property) {
-		String setterName = "set" + StringUtils.toTitleCase(property);
+		String setterName = "set" + StringUtils.capitalize(property);
 		for (Method m : bean.getClass().getMethods()) {
 			if (setterName.equals(m.getName()) && m.getParameterTypes().length == 1) {
 				return m;

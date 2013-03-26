@@ -6,9 +6,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 /**
- * Extends functionality of OKCancelDialog with a 'SaveAndContinue'
- * command.
+ * Extends functionality of OKCancelDialog with a 'SaveAndContinue' command.
  */
+@SuppressWarnings("serial")
 public class OKCancelContinueDialog extends OKCancelDialog {
 
     private boolean canContinue;

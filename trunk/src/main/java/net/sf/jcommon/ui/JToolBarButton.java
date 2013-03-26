@@ -13,6 +13,7 @@ import javax.swing.border.Border;
 /**
  * ToolBar button implementation.
  */
+@SuppressWarnings("serial")
 public class JToolBarButton extends JButton {
 
   /** a highlight border when mouse is on a tollbar button */

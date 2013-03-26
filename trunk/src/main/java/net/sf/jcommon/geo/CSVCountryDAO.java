@@ -13,6 +13,7 @@ import com.google.common.collect.Iterators;
 public class CSVCountryDAO extends AbstractCountryDAO {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CSVCountryDAO.class);
+	private static final Splitter SPLITTER = Splitter.on(",").omitEmptyStrings().trimResults();
 
 	protected Collection<Country> loadCountries() throws IOException {
     	char columnSeparator = ',';
@@ -38,15 +39,13 @@ public class CSVCountryDAO extends AbstractCountryDAO {
         }
 		
 		Collection<Country> countries = new HashSet<Country>();
-		Map<String, String> countryColumns = new HashMap<String, String>();
-		Map<String, String> countryDisplayNames = new HashMap<String, String>();
 		String[] columnNames;
 		RowIterator rows = new RowIterator(in, columnSeparator);
 		if (rows.hasNext()) {
 			columnNames = Iterators.toArray(rows.next(), String.class);
 			while (rows.hasNext()) {
-				countryColumns.clear();
-				countryDisplayNames.clear();
+				Map<String, String> countryColumns = new HashMap<String, String>();
+				Map<String, String> countryDisplayNames = new HashMap<String, String>();
 				ColumnIterator cols = rows.next();
 				int i = -1;
 				while (cols.hasNext()) {
@@ -64,11 +63,11 @@ public class CSVCountryDAO extends AbstractCountryDAO {
 				if (!countryColumns.isEmpty()) {
 					String localesAsStr = countryColumns.get("locales");					
 					String[] locales = localesAsStr == null ? null 
-							: Iterables.toArray(Splitter.on(',').split(localesAsStr), String.class);
+							: Iterables.toArray(SPLITTER.split(localesAsStr), String.class);
 					
 					String defaultForLangAsStr = countryColumns.get("default-for-lang");					
 					String[] defaultForLang = defaultForLangAsStr == null ? null 
-							: Iterables.toArray(Splitter.on(',').split(defaultForLangAsStr), String.class);
+							: Iterables.toArray(SPLITTER.split(defaultForLangAsStr), String.class);
 					
 					int ison;
 					try {

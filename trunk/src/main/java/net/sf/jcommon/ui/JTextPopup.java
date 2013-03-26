@@ -9,8 +9,8 @@ import java.awt.*;
 
 /**
  * A popup menu for a text component.
- * @author Adrian BER (adrian.ber@greefsoftware.com)
  */
+@SuppressWarnings("serial")
 public class JTextPopup extends JPopupMenu {
 
     /** The text component associated with this popup. */

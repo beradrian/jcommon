@@ -15,7 +15,9 @@ import java.beans.PropertyEditorSupport;
  *			</property>
  *		</bean>
  * }
+ * @deprecated Use {@link CountryFormatter} instead
  */
+@Deprecated
 public class CountryPropertyEditor extends PropertyEditorSupport {
 
 	@Override

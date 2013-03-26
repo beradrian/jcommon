@@ -21,6 +21,14 @@ public final class Country {
 		return DEFAULT;
 	}
 
+	private static <T> int compareNulls(Comparable<T> c1, T c2) {
+		if (c1 == null)
+			return c2 == null ? 0 : -1;
+		if (c2 == null)
+			return 1;
+		return c1.compareTo(c2);
+	}
+	
 	@SuppressWarnings("serial")
 	public static class NameComparator implements Comparator<Country>, Serializable {
 		public int compare(Country c1, Country c2) {
@@ -40,11 +48,17 @@ public final class Country {
 		}
 
 		public int compare(Country c1, Country c2) {
-            return c1 == null ? (c2 == null ? 0 : -1) 
-            		: (c2 == null ? 1 : (c1.getLocalizedName(language) == null 
-            				? (c2.getLocalizedName(language) == null ? 0 : -1) 
-            			: c1.getLocalizedName(language).compareTo(c2.getLocalizedName(language))));
-            		
+			if (c1 == null)
+				return c2 == null ? 0 : -1;
+			if (c2 == null)
+				return 1;
+			String name1 = c1.getLocalizedName(language);
+			if (name1 == null)
+				name1 = c1.getName();
+			String name2 = c2.getLocalizedName(language);
+			if (name2 == null)
+				name2 = c2.getName();
+			return compareNulls(name1, name2);
         }
     }
 

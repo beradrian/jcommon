@@ -1,6 +1,9 @@
 package net.sf.jcommon.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  */
@@ -21,5 +24,12 @@ public class CollectionUtils {
                 return true;
         }
         return false;
+    }
+    
+    public static <T extends Comparable<? super T>> List<T> sorted(Collection<T> c) {
+    	List<T> d = new ArrayList<T>();
+    	d.addAll(c);
+    	Collections.sort(d);
+    	return d;
     }
 }

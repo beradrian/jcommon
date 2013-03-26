@@ -10,6 +10,21 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 
+/**
+ * How to define it in plugin.xml
+ * {@code
+ * <plugin id="net.sf.jcommon" name="DataNucleus plug-ins" provider-name="jcommon">
+ *   <extension point="org.datanucleus.type_converter">
+ *       <type-converter name="dn.country-string" member-type="net.sf.jcommon.geo.Country" 
+ *       	datastore-type="java.lang.String"
+ *           converter-class="net.sf.jcommon.geo.CountryStringConverter" />
+ *       <type-converter name="dn.strings-string" member-type="[Ljava.lang.String;" 
+ *       	datastore-type="java.lang.String"
+ *           converter-class="net.sf.jcommon.persistence.ArrayOfStringsToStringConverter" />
+ *   </extension>
+ * </plugin>
+ * } 
+ */
 public class ArrayOfStringsToStringConverter implements TypeConverter<String[], String> {
 
 	private static final long serialVersionUID = 1L;

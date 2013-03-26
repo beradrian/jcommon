@@ -7,6 +7,7 @@ import java.awt.Color;
  * 
  * @author Adrian BER
  */
+@SuppressWarnings("serial")
 public class RGBSwapColorSpace extends ColorSpace {
 
     private int[] indices;

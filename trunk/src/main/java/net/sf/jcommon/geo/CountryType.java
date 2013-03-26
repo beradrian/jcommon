@@ -1,5 +1,7 @@
 package net.sf.jcommon.geo;
 
+import net.sf.jcommon.persistence.GenericStringType;
+
 public class CountryType extends GenericStringType<Country> {
 
 	@Override

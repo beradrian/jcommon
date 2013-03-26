@@ -17,4 +17,9 @@ public class StringUtilsTestCase {
         assertEquals("toCamelCase6", "TestToCamelCase", StringUtils.toCamelCase("TEST_To_cAmEl_CaSE"));
         assertEquals("toCamelCase7", "camelCase", StringUtils.toCamelCase("camel_case"));
     }
+    
+    @Test public void testNl2p() {
+    	assertEquals("Hello<br/>world!", StringUtils.nl2p("Hello\nworld!"));
+    	assertEquals("<p>Hello</p><p>world!</p>", StringUtils.nl2p("Hello\n\nworld!"));
+    }
 }
