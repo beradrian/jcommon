@@ -16,12 +16,12 @@ public class CountryStringMapping extends ObjectAsStringMapping {
 
 	@Override
 	protected String objectToString(Object object) {
-		return ((Country)object).getISO();
+		return object == null ? null : ((Country)object).getISO();
 	}
 
 	@Override
 	protected Object stringToObject(String datastoreValue) {
-		return Country.getCountries().findByISO(datastoreValue);
+		return datastoreValue == null ? null : Country.getCountries().findByISO(datastoreValue);
 	}
 
 }
