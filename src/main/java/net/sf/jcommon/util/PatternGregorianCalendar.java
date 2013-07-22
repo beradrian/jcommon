@@ -4,8 +4,7 @@ import java.util.regex.*;
 import java.util.*;
 
 /**
- * A calendar used for comparing with a date but ignoring some fields. For
- * example you can compare only the weekday.
+ * A calendar used for comparing with a date but ignoring some fields. For example you can compare only the weekday.
  */
 @SuppressWarnings("serial")
 public class PatternGregorianCalendar extends GregorianCalendar
@@ -32,8 +31,7 @@ public class PatternGregorianCalendar extends GregorianCalendar
      * @param minute the minute
      * @param second the second
      */
-    public PatternGregorianCalendar(int year, int month, int day,
-                                    int hour, int minute, int second) {
+    public PatternGregorianCalendar(int year, int month, int day, int hour, int minute, int second) {
         this(year, month, day, -1, hour, minute, second);
     }
 
@@ -46,8 +44,7 @@ public class PatternGregorianCalendar extends GregorianCalendar
      * @param minute the minute
      * @param second the second
      */
-    public PatternGregorianCalendar(int year, int month, int day, int weekday,
-                                    int hour, int minute, int second) {
+    public PatternGregorianCalendar(int year, int month, int day, int weekday, int hour, int minute, int second) {
         set(YEAR, year);
         set(MONTH, month);
         set(DAY_OF_MONTH, day);
@@ -207,8 +204,7 @@ public class PatternGregorianCalendar extends GregorianCalendar
     /** Pattern for matching calendar format with weekday. */
     private static Pattern patt2 = Pattern.compile("([0-9]{4}+|xxxx)/([0-9]{2}+|xx)/([0-9]{2}+|xx)([(]([1-7]|x)[)])\\s+([0-9]{2}+|xx):([0-9]{2}+|xx):([0-9]{2}+|xx)");
 
-    /** Creates a new calendar formatted as in the given string or null
-     * if the string isn't in the right format.
+    /** Creates a new calendar formatted as in the given string or null if the string isn't in the right format.
      * @param s the formatted string
      * @return the resulting calendar
      */
@@ -306,26 +302,6 @@ public class PatternGregorianCalendar extends GregorianCalendar
             return new PatternGregorianCalendar(year, month, day, weekday, hour, minute, second);
         }
         return null;
-    }
-
-    /** Creates a new interval of two calendars formatted as in the given string
-     * or null if the string isn't in the right format.
-     * @param s the formatted string
-     * @return the resulting interval
-     */
-    public static Interval<? extends Calendar> parseInterval(String s) {
-        StringTokenizer st = new StringTokenizer(s, "->", false);
-        PatternGregorianCalendar cal1 = null, cal2 = null;
-        if (st.hasMoreTokens()) {
-            cal1 = parse(st.nextToken().trim());
-        }
-        if ((cal1 != null) && (st.hasMoreTokens())) {
-            cal2 = parse(st.nextToken().trim());
-        }
-        if ((cal1 != null) && (cal2 != null))
-            return new Interval<Calendar>(cal1, cal2);
-        else
-            return null;
     }
 
 }

@@ -160,7 +160,6 @@ public enum HTMLColor {
     }
 
     public Color getColor() {
-        // take out the alpha value
         return color;
     }
 

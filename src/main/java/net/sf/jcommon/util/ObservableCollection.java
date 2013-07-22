@@ -2,17 +2,20 @@ package net.sf.jcommon.util;
 
 import java.util.*;
 
+import com.google.common.collect.ForwardingCollection;
+import com.google.common.collect.ForwardingIterator;
+
 /** A collection that decorates another collection 
  * and triggers {@link CollectionListener}'s for every change.
  * @see CollectionEvent 
  */
-public class ObservableCollection<E> implements Collection<E> {
+public class ObservableCollection<E> extends ForwardingCollection<E> {
 
 	/** An iterator that decorates another iterator and 
 	 * triggers {@link CollectionListener}'s every time an element is removed. 
 	 * The triggered listeners are the ones from the enclosing collection. 
 	 */
-	protected class ObservableIterator implements Iterator<E> {
+	protected class ObservableIterator extends ForwardingIterator<E> {
 
 		/** The underlying iterator. */
 		private Iterator<E> decorated;
@@ -23,22 +26,25 @@ public class ObservableCollection<E> implements Collection<E> {
 			this.decorated = decorated;
 		}
 		
-		public boolean hasNext() {
-			return decorated.hasNext();
+		@Override
+		protected Iterator<E> delegate() {
+			return decorated;
 		}
-
+		
+		@Override
 		public E next() {
-			current = decorated.next();
+			current = delegate().next();
 			return current;
 		}
 
+		@Override
 		public void remove() {
 			CollectionEvent<E> evt = new CollectionEvent<E>(ObservableCollection.this, current, CollectionEvent.Operation.REMOVE);
 			firePreEvent(evt);
-			decorated.remove();
+			delegate().remove();
 			firePostEvent(evt);			
 		}
-		
+
 	}
 	
 	/** The underlying collection. */
@@ -51,6 +57,11 @@ public class ObservableCollection<E> implements Collection<E> {
 		this.decorated = decorated;
 	}
 	
+	@Override
+	protected Collection<E> delegate() {
+		return decorated;
+	}
+
 	protected void firePreEvent(CollectionEvent<E> evt) {
 		for (CollectionListener<E> listener : listeners) {
 			listener.pre(evt);
@@ -71,52 +82,42 @@ public class ObservableCollection<E> implements Collection<E> {
 		listeners.remove(listener);
 	}
 
-	public boolean add(E elem) {
-		CollectionEvent<E> evt = new CollectionEvent<E>(this, elem, CollectionEvent.Operation.ADD);
+	public boolean add(E e) {
+		CollectionEvent<E> evt = new CollectionEvent<E>(this, e, CollectionEvent.Operation.ADD);
 		firePreEvent(evt);
-		boolean retval = decorated.add(elem);
-		if (retval)
+		if (delegate().add(e)) {
 			firePostEvent(evt);
-		return retval;
+			return true;
+		}
+		return false;
 	}
 
-	public boolean addAll(Collection<? extends E> elems) {
-		CollectionEvent<E> evt = new CollectionEvent<E>(this, elems, CollectionEvent.Operation.ADD);
+	public boolean addAll(Collection<? extends E> c) {
+		CollectionEvent<E> evt = new CollectionEvent<E>(this, c, CollectionEvent.Operation.ADD);
 		firePreEvent(evt);
-		boolean retval = decorated.addAll(elems);
-		if (retval)
+		if (delegate().addAll(c)) {
 			firePostEvent(evt);
-		return retval;
+			return true;
+		}
+		return false;	
 	}
 
 	public void clear() {
 		CollectionEvent<E> evt = new CollectionEvent<E>(this, CollectionEvent.Operation.CLEAR);
 		firePreEvent(evt);
-		decorated.clear();
+		delegate().clear();
 		firePostEvent(evt);
 	}
 
-	public boolean contains(Object e) {
-		return decorated.contains(e);
-	}
-
-	public boolean containsAll(Collection<?> c) {
-		return decorated.containsAll(c);
-	}
-
-	public boolean isEmpty() {
-		return decorated.isEmpty();
-	}
-
 	public Iterator<E> iterator() {
-		return new ObservableIterator(decorated.iterator());
+		return new ObservableIterator(delegate().iterator());
 	}
 
 	@SuppressWarnings("unchecked")
 	public boolean remove(Object e) {
 		CollectionEvent<E> evt = new CollectionEvent<E>(this, (E)e, CollectionEvent.Operation.REMOVE);
 		firePreEvent(evt);
-		boolean retval = decorated.remove(e);
+		boolean retval = delegate().remove(e);
 		if (retval)
 			firePostEvent(evt);
 		return retval;
@@ -126,7 +127,7 @@ public class ObservableCollection<E> implements Collection<E> {
 	public boolean removeAll(Collection<?> c) {
 		CollectionEvent<E> evt = new CollectionEvent<E>(this, (Collection<E>)c, CollectionEvent.Operation.REMOVE);
 		firePreEvent(evt);
-		boolean retval = decorated.removeAll(c);
+		boolean retval = delegate().removeAll(c);
 		if (retval)
 			firePostEvent(evt);
 		return retval;
@@ -134,30 +135,17 @@ public class ObservableCollection<E> implements Collection<E> {
 
 	public boolean retainAll(Collection<?> c) {
 		Collection<E> toRemove = new HashSet<E>();
-		for (E e : decorated) {
+		for (E e : delegate()) {
 			if (!c.contains(e)) {
 				toRemove.add(e);
 			}
 		}
 		CollectionEvent<E> evt = new CollectionEvent<E>(this, toRemove, CollectionEvent.Operation.REMOVE);
 		firePreEvent(evt);
-		boolean retval = decorated.retainAll(c);
+		boolean retval = delegate().retainAll(c);
 		if (retval)
 			firePostEvent(evt);
 		return retval;
 	}
-
-	public int size() {
-		return decorated.size();
-	}
-
-	public Object[] toArray() {
-		return decorated.toArray();
-	}
-
-	public <T> T[] toArray(T[] array) {
-		return decorated.toArray(array);
-	}
-
 	
 }
