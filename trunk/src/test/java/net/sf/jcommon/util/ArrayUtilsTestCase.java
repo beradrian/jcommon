@@ -17,19 +17,6 @@ public class ArrayUtilsTestCase {
         assertEquals("testBytesToShort1", 220, ArrayUtils.bytesToShort(buff, 1));
     }
 
-    @Test public void testSubArray() {
-        assertNull(ArrayUtils.subArray(new byte[] {1, 2, 3}, 2, 0));
-        assertNull(ArrayUtils.subArray(new byte[] {1, 2, 3}, 5, 7));
-        assertNull(ArrayUtils.subArray(new byte[0], 0, 0));
-        byte[] x = ArrayUtils.subArray(new byte[] {1, 2, 3}, 1, 2);
-        assertEquals(1, x.length);
-        assertEquals(2, x[0]);
-        x = ArrayUtils.subArray(new byte[] {1, 2, 3, 4}, 1, 3);
-        assertEquals(2, x.length);
-        assertEquals(2, x[0]);
-        assertEquals(3, x[1]);
-    }
-
     /** Test {@link ArrayUtils#reverseArray} with no elements. */
     @Test public void testReverseArray0() {
         int[] array = new int[0];
@@ -107,12 +94,6 @@ public class ArrayUtilsTestCase {
         assertEquals(1, array[2]);
         assertEquals(9, array[3]);
         assertEquals(5, array[4]);
-    }
-
-    @Test public void testIndexOfInt() {
-        int[] array = new int[] {3, 9, 4, 5};
-        assertEquals(1, ArrayUtils.indexOf(array, 9));
-        assertEquals(-1, ArrayUtils.indexOf(array, 11));
     }
 
     @Test public void testIndexOfString() {

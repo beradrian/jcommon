@@ -48,11 +48,12 @@ public class MessageResourceBundle extends ResourceBundle {
         try {
             Properties properties = new Properties();
             properties.load(in);
-            PropertyUtils.copyProperties(properties, resources);
+            for (Map.Entry<Object, Object> p : properties.entrySet()) {
+            	resources.put(p.getKey().toString(), p.getValue());
+            }
         } catch (IOException e) {
         }
     }
-
 
     public String getMessage(String key) {
         return (String) handleGetObject(key);

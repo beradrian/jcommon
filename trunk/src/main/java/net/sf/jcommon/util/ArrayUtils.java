@@ -10,24 +10,6 @@ public class ArrayUtils {
     /** Use only the static methods. */
     private ArrayUtils() {}
 
-    /** Returns a subarray of the given array.
-     * @param x the initial array
-     * @param startIndex the index of the first element in the subarray
-     * @param endIndex the index of the last element in the subarray
-     * @return the subbarray
-     */
-    public static byte[] subArray(byte[] x, int startIndex, int endIndex) {
-        if (startIndex >= x.length)
-            return null;
-        if (endIndex > x.length)
-            endIndex = x.length - 1;
-        if (startIndex >= endIndex)
-            return null;
-        byte[] r = new byte[endIndex - startIndex];
-        System.arraycopy(x, startIndex, r, 0, endIndex - startIndex);
-        return r;
-    }
-
     public static void intToBytes(int value, byte[] buff, int offset) {
         buff[offset    ] = (byte)((value >> 24) & 0xff);
         buff[offset + 1] = (byte)((value >> 16) & 0xff);
@@ -98,14 +80,6 @@ public class ArrayUtils {
         }
     }
 
-    public static int indexOf(int[] array, int element) {
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] == element)
-                return i;
-        }
-        return -1;
-    }
-
     public static <T> int indexOf(T[] array, T element) {
         for (int i = 0; i < array.length; i++) {
             if (array[i].equals(element))
@@ -114,8 +88,8 @@ public class ArrayUtils {
         return -1;
     }
 
-    public static int[] range(int n) {
-    	return range(0, n);
+    public static int[] fillRange(int n) {
+    	return fillRange(0, n);
     }
     	
     /**
@@ -123,7 +97,7 @@ public class ArrayUtils {
      * @param n the length array
      * @return the generated array
      */
-    public static int[] range(int offset, int n) {
+    public static int[] fillRange(int offset, int n) {
         int[] r = new int[n];
         for (int i = 0; i < r.length; i++) {
             r[i] = offset + i;
@@ -143,20 +117,6 @@ public class ArrayUtils {
             r[i] = randomGenerator.nextInt(end - start) + start;
         }
         return r;    	
-    }
-
-    public static String concatToString(int[] array, String separator) {
-        if (array == null)
-            return null;
-        StringBuilder sb = new StringBuilder();
-        if (array.length > 0)
-            sb.append(array[0]);
-        for (int i = 1; i < array.length; i++) {
-            if (separator != null)
-                sb.append(separator);
-            sb.append(array[i]);
-        }
-        return sb.toString();
     }
 
     public static void swap(int[] array, int offset1, int offset2) {

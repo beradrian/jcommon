@@ -3,7 +3,7 @@ package net.sf.jcommon.util;
 import java.util.Calendar;
 
 /**
- * Calendar utiliy methods. 
+ * Calendar utility methods. 
  */
 public class CalendarUtils {
 

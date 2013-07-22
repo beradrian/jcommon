@@ -1,6 +1,5 @@
 package net.sf.jcommon.util;
 
-import java.util.Collections;
 import java.util.Comparator;
 
 public class Comparators {
@@ -47,11 +46,4 @@ public class Comparators {
 		return IGNORE_CASE_COMPARATOR;
 	}
 	
-	/**
-	 * @param comparator the original comparator that is considered to compare in ascending order
-	 * @return a reversed comparator, if the direction is descending, the same comparator otherwise
-	 */
-	public static <T> Comparator<T> forDirection(Comparator<T> comparator, SortingDirection direction) {
-		return direction == SortingDirection.ASCENDING ? comparator : Collections.reverseOrder(comparator);
-	}
 }
