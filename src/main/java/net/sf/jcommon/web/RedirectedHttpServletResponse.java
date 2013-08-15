@@ -42,7 +42,7 @@ public class RedirectedHttpServletResponse extends HttpServletResponseWrapper {
     public RedirectedHttpServletResponse(HttpServletResponse httpServletResponse, OutputStream out) {
         super(httpServletResponse);
         sout = new RedirectedServletOutputStream(out);
-        writer = new PrintWriter(new OutputStreamWriter(out));
+        writer = new PrintWriter(new OutputStreamWriter(sout));
     }
 
     public PrintWriter getWriter() throws IOException {

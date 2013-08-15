@@ -17,11 +17,15 @@ public class Elements {
     private Elements() {
     }
 
-    public Iterator<Node> asIterator(NodeList nodeList) {
+    public static Iterable<Node> asIterable(NodeList nodeList) {
+    	return new IterableNodeList(nodeList);
+    }
+    
+    public static Iterator<Node> asIterator(NodeList nodeList) {
     	return new NodeListIterator(nodeList);
     }
     
-    public Iterator<Node> getChildrenAsIterator(Element e) {
+    public static Iterator<Node> getChildrenAsIterator(Element e) {
     	return new ChildrenIterator(e);
     }
     
