@@ -1,31 +1,19 @@
 package net.sf.jcommon.geo;
 
-import javax.persistence.jpa21.AttributeConverter;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
-import org.datanucleus.store.types.converters.TypeConverter;
-
-public class CountryStringConverter implements TypeConverter<Country, String>, AttributeConverter<Country, String> {
-
-	private static final long serialVersionUID = 1L;
-
-	@Override
-	public String toDatastoreType(Country memberValue) {
-		return memberValue == null ? null : memberValue.getISO();
-	}
-
-	@Override
-	public Country toMemberType(String datastoreValue) {
-		return  datastoreValue == null ? null : Country.getCountries().findByISO(datastoreValue.trim());
-	}
+@Converter(autoApply = true)
+public class CountryStringConverter implements AttributeConverter<Country, String> {
 
 	@Override
 	public String convertToDatabaseColumn(Country attributeObject) {
-		return toDatastoreType(attributeObject);
+		return attributeObject == null ? null : attributeObject.getISO();
 	}
 
 	@Override
-	public Country convertToEntityAttribute(String dbData) {
-		return toMemberType(dbData);
+	public Country convertToEntityAttribute(String datastoreValue) {
+		return datastoreValue == null ? null : Country.getCountries().findByISO(datastoreValue.trim());
 	}
 
 }
