@@ -2,6 +2,7 @@ package net.sf.jcommon.web;
 
 import java.io.*;
 import java.util.zip.GZIPOutputStream;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 
@@ -67,4 +68,13 @@ public class GZIPResponseStream extends ServletOutputStream {
     public void reset() {
         //noop
     }
+
+	@Override
+	public boolean isReady() {
+		return true;
+	}
+
+	@Override
+	public void setWriteListener(WriteListener writeListener) {
+	}
 }

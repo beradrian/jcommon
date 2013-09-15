@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
@@ -34,6 +35,17 @@ public class RedirectedHttpServletResponse extends HttpServletResponseWrapper {
         public void close() throws IOException {
             out.close();
         }
+
+		@Override
+		public boolean isReady() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+
+		@Override
+		public void setWriteListener(WriteListener writeListener) {
+			// TODO Auto-generated method stub
+		}
     }
 
     private ServletOutputStream sout;
