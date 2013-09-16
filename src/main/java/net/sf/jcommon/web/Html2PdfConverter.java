@@ -48,6 +48,10 @@ import com.lowagie.text.DocumentException;
  *  
  *  Then a request to http://server/webapp/justhtml.pdf will result in the response getting automatically 
  *  converted from HTML to PDF.
+ *  
+ *  If you're using it with Spring it is enough to map it to a @Controller method @RequestMapping({"info.html", "info.pdf"}) 
+ *  and then return a view that will return HTML code. This filter will automatically transform the result into PDF and
+ *  you can have both HTML and PDF with the same code. 
  *
  *  - as a servlet
  *  <blockquote><code><pre>

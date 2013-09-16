@@ -13,7 +13,16 @@ import org.springframework.web.context.request.ServletWebRequest;
 
 /** 
  * A Spring WebArgumentResolver which resolves a controller method parameter with an attribute value from
- * request, session or servlet context. 
+ * request, session or servlet context annotated with {@link net.sf.jcommon.web.WebAttribute}}. 
+ * 
+ * This is how you can configure it inside a front controller configuration file (x-servlet.xml)
+ * 	&lt;bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"&gt;
+ *        &lt;property name="customArgumentResolvers"&gt;
+ *        	&lt;list&gt;
+ *        		&lt;bean class="net.sf.jcommon.spring.WebAttributeArgumentResolver" /&gt;
+ *        	&lt;/list&gt;
+ *        &lt;/property&gt;
+ *	&lt;/bean&gt;
  */
 public class WebAttributeArgumentResolver implements WebArgumentResolver, ServletContextAware {
 
