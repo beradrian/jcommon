@@ -28,9 +28,9 @@ import com.lowagie.text.DocumentException;
 /**
  * Converts HTML to PDF. It can act as a filter and it will simply convert the response, supposedly in HTML, to PDF.
  * 
- * It can act as a servlet and then it will receive the URL to be converted as a request parameter. 
+ * It can also act as a servlet and then it will receive the URL to be converted as a request parameter. 
  * The parameter name can be configured through a servlet initialization parameter called {@code uriParameter}.
- * If not specified the default value is {@code q}.
+ * If not specified the default value is {@code q} (from query).
  * 
  *  Configuration examples
  *  - as a filter
@@ -45,6 +45,9 @@ import com.lowagie.text.DocumentException;
  *      &lt;url-pattern&gt;*.pdf&lt;/url-pattern&gt;
  *  &lt;/filter-mapping&gt;
  *  </pre></code></blockquote>
+ *  
+ *  Then a request to http://server/webapp/justhtml.pdf will result in the response getting automatically 
+ *  converted from HTML to PDF.
  *
  *  - as a servlet
  *  <blockquote><code><pre>
@@ -58,6 +61,9 @@ import com.lowagie.text.DocumentException;
  *      &lt;url-pattern&gt;/gimmepdf&lt;/url-pattern&gt;
  *  &lt;/servlet-mapping&gt;
  *  </pre></code></blockquote>
+ *  
+ *  Then a request to http://server/webapp/gimmepdf?q=/justhtml will result in a server-side request to
+ *  http://server/webapp/justhtml, which will then get translated to PDF and returned as a response.
  */
 public class Html2PdfConverter implements Filter, Servlet {
 
