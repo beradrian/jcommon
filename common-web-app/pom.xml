@@ -465,6 +465,8 @@
 					<artifactId>maven-eclipse-plugin</artifactId>
 					<version>2.9</version>
 					<configuration>
+						<!-- You need to have M2_HOME variable defined in your IDE and pointing to Maven installation folder
+							in order to use any of the custom builders from below -->
 						<additionalBuildcommands>
 							<buildCommand>
 								<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
