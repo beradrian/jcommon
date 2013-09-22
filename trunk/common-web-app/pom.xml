@@ -397,7 +397,7 @@
 			</properties>
 			<dependencies>
 				<!-- DataNucleus core libraries must have runtime scope otherwise there 
-					is an error running DataNucleus Enhancer -->
+					is an error running DataNucleus Enhancer http://stackoverflow.com/questions/877949 -->
 				<dependency>
 					<groupId>org.datanucleus</groupId>
 					<artifactId>datanucleus-core</artifactId>
