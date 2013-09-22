@@ -2,6 +2,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	
 		<spring.version>3.2.4.RELEASE</spring.version>
 		<spring.security.version>3.1.4.RELEASE</spring.security.version>
 		<slf4j.version>1.7.5</slf4j.version>
@@ -397,7 +399,8 @@
 			</properties>
 			<dependencies>
 				<!-- DataNucleus core libraries must have runtime scope otherwise there 
-					is an error running DataNucleus Enhancer http://stackoverflow.com/questions/877949 -->
+					is an error running DataNucleus Enhancer 
+					http://stackoverflow.com/questions/877949 -->
 				<dependency>
 					<groupId>org.datanucleus</groupId>
 					<artifactId>datanucleus-core</artifactId>
