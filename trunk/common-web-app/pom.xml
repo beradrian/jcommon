@@ -14,6 +14,9 @@
 		<scss.src.dir>${project.basedir}/src/main/scss</scss.src.dir>
 		<css.target.dir>${project.basedir}/src/main/webapp/res</css.target.dir>
 
+		<requirejs.configDir>${project.basedir}/src/main/requirejs-config</requirejs.configDir>
+		<requirejs.configFile>${requirejs.configDir}/main.js</requirejs.configFile>
+
 		<groupFolder>net/sf/jcommon</groupFolder>
 		<domainModel.classes>${groupFolder}/*.class</domainModel.classes>
 	</properties>
@@ -264,6 +267,27 @@
 			<name>DataNucleus Repository</name>
 			<url>http://www.datanucleus.org/downloads/maven2</url>
 		</repository>
+
+		<repository>
+			<id>tmatesoft-releases</id>
+			<url>http://maven.tmatesoft.com/content/repositories/releases/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>tmatesoft-snapshots</id>
+			<url>http://maven.tmatesoft.com/content/repositories/snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 
 	<pluginRepositories>
@@ -353,11 +377,32 @@
 			<name>DataNucleus pluginRepository</name>
 			<url>http://www.datanucleus.org/downloads/maven2</url>
 		</pluginRepository>
+
+		<pluginRepository>
+			<id>tmatesoft-releases</id>
+			<url>http://maven.tmatesoft.com/content/repositories/releases/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>tmatesoft-snapshots</id>
+			<url>http://maven.tmatesoft.com/content/repositories/snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
 	</pluginRepositories>
 
 	<profiles>
 		<profile>
-			<id>local</id>
+			<id>dev</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
@@ -398,11 +443,25 @@
 				<spring.profiles.active>${spring.profiles.active.env},${spring.profiles.active.data}</spring.profiles.active>
 			</properties>
 			<dependencies>
+				<!-- DataNucleus core libraries must have runtime scope otherwise there 
+					is an error running DataNucleus Enhancer http://stackoverflow.com/questions/877949 -->
+				<dependency>
+					<groupId>org.datanucleus</groupId>
+					<artifactId>datanucleus-core</artifactId>
+					<version>3.2.7</version>
+					<scope>runtime</scope>
+				</dependency>
 				<dependency>
 					<groupId>org.datanucleus</groupId>
 					<artifactId>datanucleus-accessplatform-jpa-rdbms</artifactId>
 					<version>3.3.2</version>
 					<type>pom</type>
+					<exclusions>
+						<exclusion>
+							<groupId>org.datanucleus</groupId>
+							<artifactId>datanucleus-core</artifactId>
+						</exclusion>
+					</exclusions>
 				</dependency>
 				<dependency>
 					<groupId>org.eclipse.persistence</groupId>
@@ -416,6 +475,23 @@
 					<plugin>
 						<groupId>org.datanucleus</groupId>
 						<artifactId>datanucleus-maven-plugin</artifactId>
+						<version>3.3.0-release</version>
+						<configuration>
+							<log4jConfiguration>${project.build.outputDirectory}/log4j.properties</log4jConfiguration>
+							<verbose>true</verbose>
+							<enhancerName>ASM</enhancerName>
+							<api>JPA</api>
+							<fork>false</fork>
+							<metadataIncludes>${domainModel.classes}</metadataIncludes>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>process-classes</phase>
+								<goals>
+									<goal>enhance</goal>
+								</goals>
+							</execution>
+						</executions>
 					</plugin>
 				</plugins>
 			</build>
@@ -430,9 +506,42 @@
 			</activation>
 			<build>
 				<plugins>
+					<!-- - To install Sass and compass follow these steps - 1. Install Ruby 
+						from [http://rubyinstaller.org/downloads/]. Do not forget to check <code>Add 
+						Ruby executables to your PATH</code>. - 2. On the command line type <code>gem 
+						install [ - -http-proxy http://proxy:port ] sass</code> - 3. On the command 
+						line type <code>gem install [ - -http-proxy http://proxy:port ] compass</code> 
+						- For download issues try change the source: - gem source -r https://rubygems.org/ 
+						- gem source -a http://rubygems.org/ - - To generate CSSes: mvn generate-resources 
+						-P profile - Main SCSS files that will result in CSS files being generated 
+						starts without _ (underscore), - modules included in other files starts with 
+						_ -->
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.1</version>
+						<executions>
+							<execution>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<executable>compass</executable>
+							<arguments>
+								<argument>compile</argument>
+								<argument>--sass-dir</argument>
+								<argument>${scss.src.dir}</argument>
+								<argument>--css-dir</argument>
+								<argument>${css.target.dir}</argument>
+								<argument>--output-style</argument>
+								<argument>${css.output.style}</argument>
+								<argument>--force</argument>
+								<argument>${css.build.option}</argument>
+							</arguments>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>
@@ -442,65 +551,129 @@
 	<build>
 		<finalName>${project.artifactId}</finalName>
 
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<compilerVersion>${java.version}</compilerVersion>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.12</version>
+				<configuration>
+					<skipTests>true</skipTests>
+					<forkMode>pertest</forkMode>
+					<argLine>-Dspring.profiles.active=${spring.profiles.active}</argLine>
+				</configuration>
+			</plugin>
+
+			<!-- do not upgrade version or an error will appear in Eclipse http://stackoverflow.com/questions/7530284/org-codehaus-plexus-archiver-jar-jararchiver-unsupported-major-minor-version-49 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<archive>
+						<manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+					</archive>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<!-- You need to have M2_HOME variable defined in your IDE and pointing 
+						to Maven installation folder in order to use any of the custom builders from 
+						below -->
+					<additionalBuildcommands>
+						<buildCommand>
+							<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
+							<triggers>auto,full,incremental,</triggers>
+							<arguments>
+								<LaunchConfigHandle>&lt;project&gt;/.externalToolBuilders/SCSS.launch</LaunchConfigHandle>
+							</arguments>
+						</buildCommand>
+						<buildCommand>
+							<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
+							<triggers>auto,full,incremental,</triggers>
+							<arguments>
+								<LaunchConfigHandle>&lt;project&gt;/.externalToolBuilders/DataNucleusEnhancer.launch</LaunchConfigHandle>
+							</arguments>
+						</buildCommand>
+					</additionalBuildcommands>
+					<wtpContextName>${project.artifactId}</wtpContextName>
+					<wtpversion>2.0</wtpversion>
+					<jeeversion>6.0</jeeversion>
+					<additionalProjectnatures>
+						<projectnature>org.eclipse.wst.common.project.facet.core.nature</projectnature>
+					</additionalProjectnatures>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
+				<artifactId>svn-revision-number-maven-plugin</artifactId>
+				<version>1.13</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>revision</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.tmatesoft.svnkit</groupId>
+						<artifactId>svnkit</artifactId>
+						<version>1.8.0-SNAPSHOT</version>
+					</dependency>
+					<dependency>
+						<groupId>org.tmatesoft.sqljet</groupId>
+						<artifactId>sqljet</artifactId>
+						<version>1.1.6</version>
+					</dependency>
+					<dependency>
+						<groupId>de.regnis.q.sequence</groupId>
+						<artifactId>sequence-library</artifactId>
+						<version>1.0.2</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<ignoreWebxml>true</ignoreWebxml>
+					<warSourceExcludes>**/.svn/**</warSourceExcludes>
+					<webResources>
+						<webResource>
+							<directory>target</directory>
+							<includes>
+								<include>web.xml</include>
+							</includes>
+							<targetPath>WEB-INF</targetPath>
+							<filtering>true</filtering>
+						</webResource>
+					</webResources>
+				</configuration>
+			</plugin>
+
+		</plugins>
+
 		<pluginManagement>
 			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.1</version>
-					<configuration>
-						<source>${java.version}</source>
-						<target>${java.version}</target>
-						<compilerVersion>${java.version}</compilerVersion>
-					</configuration>
-				</plugin>
-
-				<!-- do not upgrade version or an error will appear in Eclipse http://stackoverflow.com/questions/7530284/org-codehaus-plexus-archiver-jar-jararchiver-unsupported-major-minor-version-49 -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>2.3.2</version>
-					<configuration>
-						<archive>
-							<manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
-						</archive>
-						<encoding>UTF-8</encoding>
-					</configuration>
-				</plugin>
-
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-eclipse-plugin</artifactId>
-					<version>2.9</version>
-					<configuration>
-						<!-- You need to have M2_HOME variable defined in your IDE and pointing 
-							to Maven installation folder in order to use any of the custom builders from 
-							below -->
-						<additionalBuildcommands>
-							<buildCommand>
-								<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
-								<triggers>auto,full,incremental,</triggers>
-								<arguments>
-									<LaunchConfigHandle>&lt;project&gt;/.externalToolBuilders/SCSS.launch</LaunchConfigHandle>
-								</arguments>
-							</buildCommand>
-							<buildCommand>
-								<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
-								<triggers>auto,full,incremental,</triggers>
-								<arguments>
-									<LaunchConfigHandle>&lt;project&gt;/.externalToolBuilders/DataNucleusEnhancer.launch</LaunchConfigHandle>
-								</arguments>
-							</buildCommand>
-						</additionalBuildcommands>
-						<wtpContextName>${project.artifactId}</wtpContextName>
-						<wtpversion>2.0</wtpversion>
-						<jeeversion>6.0</jeeversion>
-						<additionalProjectnatures>
-							<projectnature>org.eclipse.wst.common.project.facet.core.nature</projectnature>
-						</additionalProjectnatures>
-					</configuration>
-				</plugin>
-
 				<plugin>
 					<groupId>com.google.code.maven-replacer-plugin</groupId>
 					<artifactId>replacer</artifactId>
@@ -547,7 +720,6 @@
 					</configuration>
 				</plugin>
 
-
 				<!-- To run requirejs for a build profile config file. -->
 				<plugin>
 					<groupId>com.github.mcheely</groupId>
@@ -557,102 +729,93 @@
 						<execution>
 							<phase>generate-resources</phase>
 							<goals>
-								<goal>exec</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-
-				<!-- - To install Sass and compass follow these steps - 1. Install Ruby 
-					from [http://rubyinstaller.org/downloads/]. Do not forget to check <code>Add 
-					Ruby executables to your PATH</code>. - 2. On the command line type <code>gem 
-					install [ - -http-proxy http://proxy:port ] sass</code> - 3. On the command 
-					line type <code>gem install [ - -http-proxy http://proxy:port ] compass</code> 
-					- For download issues try change the source: - gem source -r https://rubygems.org/ 
-					- gem source -a http://rubygems.org/ - - To generate CSSes: mvn generate-resources 
-					-P profile - Main SCSS files that will result in CSS files being generated 
-					starts without _ (underscore), - modules included in other files starts with 
-					_ -->
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>exec-maven-plugin</artifactId>
-					<version>1.1</version>
-					<executions>
-						<execution>
-							<phase>generate-resources</phase>
-							<goals>
-								<goal>exec</goal>
+								<goal>optimize</goal>
 							</goals>
 						</execution>
 					</executions>
 					<configuration>
-						<executable>compass</executable>
-						<arguments>
-							<argument>compile</argument>
-							<argument>--sass-dir</argument>
-							<argument>${scss.src.dir}</argument>
-							<argument>--css-dir</argument>
-							<argument>${css.target.dir}</argument>
-							<argument>--output-style</argument>
-							<argument>${css.output.style}</argument>
-							<argument>--force</argument>
-							<argument>${css.build.option}</argument>
-						</arguments>
+						<configFile>${requirejs.configFile}</configFile>
 					</configuration>
 				</plugin>
 
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
-					<groupId>org.datanucleus</groupId>
-					<artifactId>datanucleus-maven-plugin</artifactId>
-					<version>3.3.0-release</version>
-					<dependencies>
-						<!-- DataNucleus core libraries must have runtime scope otherwise there 
-							is an error running DataNucleus Enhancer http://stackoverflow.com/questions/877949 -->
-						<dependency>
-							<groupId>org.datanucleus</groupId>
-							<artifactId>datanucleus-core</artifactId>
-							<version>3.2.7</version>
-							<scope>runtime</scope>
-						</dependency>
-					</dependencies>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
 					<configuration>
-						<log4jConfiguration>${project.build.outputDirectory}/log4j.properties</log4jConfiguration>
-						<verbose>true</verbose>
-						<enhancerName>ASM</enhancerName>
-						<api>JPA</api>
-						<fork>false</fork>
-						<metadataIncludes>${domainModel.classes}</metadataIncludes>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.datanucleus</groupId>
+										<artifactId>datanucleus-maven-plugin</artifactId>
+										<versionRange>[3.3.0-release,)</versionRange>
+										<goals>
+											<goal>enhance</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>com.google.code.maven-replacer-plugin</groupId>
+										<artifactId>replacer</artifactId>
+										<versionRange>[1.5.2,)</versionRange>
+										<goals>
+											<goal>replace</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>com.github.mcheely</groupId>
+										<artifactId>requirejs-maven-plugin</artifactId>
+										<versionRange>[2.0.0,)</versionRange>
+										<goals>
+											<goal>optimize</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.codehaus.mojo</groupId>
+										<artifactId>exec-maven-plugin</artifactId>
+										<versionRange>[1.0.0,)</versionRange>
+										<goals>
+											<goal>exec</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
+										<artifactId>svn-revision-number-maven-plugin</artifactId>
+										<versionRange>[1.13,)</versionRange>
+										<goals>
+											<goal>revision</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
 					</configuration>
-					<executions>
-						<execution>
-							<phase>process-classes</phase>
-							<goals>
-								<goal>enhance</goal>
-							</goals>
-						</execution>
-					</executions>
 				</plugin>
-
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-war-plugin</artifactId>
-					<version>2.2</version>
-					<configuration>
-						<ignoreWebxml>true</ignoreWebxml>
-						<warSourceExcludes>**/.svn/**</warSourceExcludes>
-						<webResources>
-							<webResource>
-								<directory>target</directory>
-								<includes>
-									<include>web.xml</include>
-								</includes>
-								<targetPath>WEB-INF</targetPath>
-								<filtering>true</filtering>
-							</webResource>
-						</webResources>
-					</configuration>
-				</plugin>
-
 			</plugins>
 		</pluginManagement>
 	</build>
