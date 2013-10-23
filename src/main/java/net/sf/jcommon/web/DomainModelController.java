@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.repository.CrudRepository;
@@ -36,6 +38,8 @@ public abstract class DomainModelController<T, ID extends Serializable> {
 	
 	/** The model class */
 	private Class<T> modelClass;
+
+	private Repositories repositories;
 	private CrudRepository<T, ID> repository;
 	
     @SuppressWarnings("unchecked")
@@ -48,7 +52,7 @@ public abstract class DomainModelController<T, ID extends Serializable> {
     		superClass = superClass.getSuperclass();
     	}
     	
-    	// determine the model class by finding the parametrized type of this actual controller class
+    	// determine the model class by finding the parameterized type of this actual controller class
     	Type genericSuperClass = superClass.getGenericSuperclass();
     	// the model class is the class of the first generic argument
     	modelClass = (Class<T>)((ParameterizedType)genericSuperClass).getActualTypeArguments()[0];
@@ -69,12 +73,29 @@ public abstract class DomainModelController<T, ID extends Serializable> {
     	return getModelClass().getSimpleName().toLowerCase();
     }
     
+    protected Repositories getRepositories() {
+    	if (repositories != null) {
+    		return repositories;
+    	}
+    	
+    	try {
+			repositories = applicationContext.getBean(Repositories.class);
+		} catch (NoUniqueBeanDefinitionException exc) {
+			// if such multiple beans exist then get the first bean
+			repositories = applicationContext.getBeansOfType(Repositories.class).entrySet().iterator().next().getValue();
+		} catch (NoSuchBeanDefinitionException exc) {
+			// create the repositories
+			repositories = new Repositories(applicationContext);
+		}
+		return repositories;
+    }
+    
     /**
      * @return the CRUD repository used by the controller for persistence operations.
      */
     protected CrudRepository<T, ID> getRepository() {
     	if (repository == null) {
-    		repository = new Repositories(applicationContext).getRepositoryFor(getModelClass());
+    		repository = getRepositories().getRepositoryFor(getModelClass());
     	}
     	return repository;
     }
