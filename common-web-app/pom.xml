@@ -16,6 +16,7 @@
 
 		<requirejs.configDir>${project.basedir}/src/main/requirejs-config</requirejs.configDir>
 		<requirejs.configFile>${requirejs.configDir}/main.js</requirejs.configFile>
+		<requirejs.optimizerFile>${requirejs.configDir}/r.js</requirejs.optimizerFile>
 
 		<groupFolder>net/sf/jcommon</groupFolder>
 		<domainModel.classes>${groupFolder}/*.class</domainModel.classes>
@@ -735,6 +736,7 @@
 					</executions>
 					<configuration>
 						<configFile>${requirejs.configFile}</configFile>
+						<optimizerFile>${requirejs.optimizerFile}</optimizerFile>
 					</configuration>
 				</plugin>
 
