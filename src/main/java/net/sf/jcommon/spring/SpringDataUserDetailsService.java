@@ -9,26 +9,26 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 public class SpringDataUserDetailsService implements UserDetailsService {
 
 	@Inject
-	private UserRepository userRepository;
+	private UserRepository<?> userRepository;
 
 	public SpringDataUserDetailsService() {
 	}
 
-	public SpringDataUserDetailsService(UserRepository userRepository) {
+	public SpringDataUserDetailsService(UserRepository<?> userRepository) {
 		this.userRepository = userRepository;
 	}
 
-	public UserRepository getUserRepository() {
+	public UserRepository<?> getUserRepository() {
 		return userRepository;
 	}
 
-	public void setUserRepository(UserRepository userRepository) {
+	public void setUserRepository(UserRepository<?> userRepository) {
 		this.userRepository = userRepository;
 	}
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		return userRepository.findByUsername();
+		return userRepository.findByUsername(username);
 	}
 
 }
