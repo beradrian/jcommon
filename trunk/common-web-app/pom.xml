@@ -436,6 +436,9 @@
 
 		<profile>
 			<id>datanucleus</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<properties>
 				<spring.profiles.active.data>datanucleus</spring.profiles.active.data>
 				<spring.profiles.active>${spring.profiles.active.env},${spring.profiles.active.data}</spring.profiles.active>
