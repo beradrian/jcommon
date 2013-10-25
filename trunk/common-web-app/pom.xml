@@ -525,7 +525,7 @@
 							<execution>
 								<phase>generate-resources</phase>
 								<goals>
-									<goal>compass</goal>
+									<goal>exec</goal>
 								</goals>
 							</execution>
 						</executions>
@@ -775,7 +775,7 @@
 										<artifactId>exec-maven-plugin</artifactId>
 										<versionRange>[1.0.0,)</versionRange>
 										<goals>
-											<goal>compass</goal>
+											<goal>exec</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
