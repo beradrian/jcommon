@@ -4,24 +4,38 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+		<javaee.version>7.0</javaee.version>
+		<java.version>1.7</java.version>
+		<wtp.version>3.5</wtp.version>
+
 		<spring.version>3.2.4.RELEASE</spring.version>
 		<spring.security.version>3.1.4.RELEASE</spring.security.version>
 		<slf4j.version>1.7.5</slf4j.version>
-		<hibernate.version>4.1.4.Final</hibernate.version>
-		<javaee.version>7.0</javaee.version>
-		<java.version>1.7</java.version>
 
+		<hibernate.version>4.1.4.Final</hibernate.version>
+
+		<!-- What is the ORM framework used. Possible values: none, datanucleus -->
+		<orm.provider>datanucleus</orm.provider>
+		<datanucleus.core.version>3.2.8</datanucleus.core.version>
+
+		<!-- properties for SCSS -->
 		<scss.src.dir>${project.basedir}/src/main/scss</scss.src.dir>
 		<css.target.dir>${project.basedir}/src/main/webapp/res</css.target.dir>
 
-		<requirejs.configDir>${project.basedir}/src/main/requirejs-config</requirejs.configDir>
-		<requirejs.configFile>${requirejs.configDir}/main.js</requirejs.configFile>
-		<requirejs.optimizerFile>${requirejs.configDir}/r.js</requirejs.optimizerFile>
+		<!-- properties for RequireJS -->
+		<requirejs.config.dir>${project.basedir}/src/main/requirejs-config</requirejs.config.dir>
+		<requirejs.config.mainFile>${requirejs.config.dir}/main.js</requirejs.config.mainFile>
+		<requirejs.optimizerFile>${requirejs.config.dir}/r.js</requirejs.optimizerFile>
+		<!-- where the JS files are copied -->
 		<js.target.dir>${project.basedir}/src/main/webapp/res/js</js.target.dir>
+		<!-- where the source JS files reside -->
 		<js.src.dir>${project.basedir}/src/main/js</js.src.dir>
+		<!-- where the JS 3rd party libraries reside -->
 		<js.lib.dir>${project.basedir}/lib/js</js.lib.dir>
 
+		<!-- the folder associated with the groupId -->
 		<groupFolder>net/sf/jcommon</groupFolder>
+		<!-- pattern for domain model classes -->
 		<domainModel.classes>${groupFolder}/*.class</domainModel.classes>
 	</properties>
 	<groupId>net.sf.jcommon</groupId>
@@ -411,7 +425,7 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<spring.profiles.active.env>local</spring.profiles.active.env>
+				<spring.profiles.active.env>dev</spring.profiles.active.env>
 				<downloadSources>true</downloadSources>
 				<downloadJavadocs>true</downloadJavadocs>
 				<css.output.style>expanded</css.output.style>
@@ -503,9 +517,6 @@
 
 		<profile>
 			<id>datanucleus</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<properties>
 				<spring.profiles.active.data>datanucleus</spring.profiles.active.data>
 				<spring.profiles.active>${spring.profiles.active.env},${spring.profiles.active.data}</spring.profiles.active>
@@ -516,7 +527,7 @@
 				<dependency>
 					<groupId>org.datanucleus</groupId>
 					<artifactId>datanucleus-core</artifactId>
-					<version>3.2.8</version>
+					<version>${datanucleus.core.version}</version>
 					<scope>runtime</scope>
 				</dependency>
 				<dependency>
@@ -545,22 +556,24 @@
 						<artifactId>datanucleus-maven-plugin</artifactId>
 						<version>3.3.0-release</version>
 						<dependencies>
+							<!-- Override the datanucles core version -->
 							<dependency>
 								<groupId>org.datanucleus</groupId>
 								<artifactId>datanucleus-core</artifactId>
-								<version>3.2.8</version>
+								<version>${datanucleus.core.version}</version>
 							</dependency>
 						</dependencies>
 						<configuration>
 							<log4jConfiguration>${project.build.outputDirectory}/log4j.properties</log4jConfiguration>
 							<verbose>true</verbose>
-							<enhancerName>ASM</enhancerName>
 							<api>JPA</api>
 							<fork>false</fork>
 							<metadataIncludes>${domainModel.classes}</metadataIncludes>
 						</configuration>
 						<executions>
 							<execution>
+								<id>datanucleus-ehancer</id>
+								<inherited>true</inherited>
 								<phase>process-classes</phase>
 								<goals>
 									<goal>enhance</goal>
@@ -621,6 +634,38 @@
 				</plugins>
 			</build>
 		</profile>
+
+		<profile>
+			<id>requirejs</id>
+			<activation>
+				<file>
+					<exists>${requirejs.config.dir}</exists>
+				</file>
+			</activation>
+			<build>
+				<plugins>
+					<!-- To run requirejs for a build profile config file. -->
+					<plugin>
+						<groupId>com.github.mcheely</groupId>
+						<artifactId>requirejs-maven-plugin</artifactId>
+						<version>2.0.0</version>
+						<executions>
+							<execution>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>optimize</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<configFile>${requirejs.config.mainFile}</configFile>
+							<optimizerFile>${requirejs.optimizerFile}</optimizerFile>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+
+		</profile>
 	</profiles>
 
 	<build>
@@ -631,6 +676,14 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
+				<dependencies>
+					<!-- Added to resolve conflictin dependencies. See http://stackoverflow.com/questions/19732445/datanucleus-enhancer-conflicting-dependencies-in-maven-part-2 -->
+					<dependency>
+						<groupId>org.datanucleus</groupId>
+						<artifactId>datanucleus-core</artifactId>
+						<version>${datanucleus.core.version}</version>
+					</dependency>
+				</dependencies>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
@@ -668,7 +721,7 @@
 				<version>2.9</version>
 				<configuration>
 					<wtpContextName>${project.artifactId}</wtpContextName>
-					<wtpversion>2.0</wtpversion>
+					<wtpversion>${wtp.version}</wtpversion>
 					<jeeversion>${javaee.version}</jeeversion>
 					<additionalProjectnatures>
 						<projectnature>org.eclipse.wst.common.project.facet.core.nature</projectnature>
@@ -743,25 +796,6 @@
 							</replacement>
 						</replacements>
 
-					</configuration>
-				</plugin>
-
-				<!-- To run requirejs for a build profile config file. -->
-				<plugin>
-					<groupId>com.github.mcheely</groupId>
-					<artifactId>requirejs-maven-plugin</artifactId>
-					<version>2.0.0</version>
-					<executions>
-						<execution>
-							<phase>generate-resources</phase>
-							<goals>
-								<goal>optimize</goal>
-							</goals>
-						</execution>
-					</executions>
-					<configuration>
-						<configFile>${requirejs.configFile}</configFile>
-						<optimizerFile>${requirejs.optimizerFile}</optimizerFile>
 					</configuration>
 				</plugin>
 
