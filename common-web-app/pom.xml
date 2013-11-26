@@ -286,26 +286,6 @@
 			<url>http://www.datanucleus.org/downloads/maven2</url>
 		</repository>
 
-		<repository>
-			<id>tmatesoft-releases</id>
-			<url>http://maven.tmatesoft.com/content/repositories/releases/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>tmatesoft-snapshots</id>
-			<url>http://maven.tmatesoft.com/content/repositories/snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
 	</repositories>
 
 	<pluginRepositories>
@@ -394,27 +374,6 @@
 			<id>DataNucleus_pluginRepos2</id>
 			<name>DataNucleus pluginRepository</name>
 			<url>http://www.datanucleus.org/downloads/maven2</url>
-		</pluginRepository>
-
-		<pluginRepository>
-			<id>tmatesoft-releases</id>
-			<url>http://maven.tmatesoft.com/content/repositories/releases/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>tmatesoft-snapshots</id>
-			<url>http://maven.tmatesoft.com/content/repositories/snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
 
@@ -517,6 +476,12 @@
 
 		<profile>
 			<id>datanucleus</id>
+			<activation>
+				<property>
+					<name>orm.provider</name>
+					<value>datanucleus</value>
+				</property>
+			</activation>
 			<properties>
 				<spring.profiles.active.data>datanucleus</spring.profiles.active.data>
 				<spring.profiles.active>${spring.profiles.active.env},${spring.profiles.active.data}</spring.profiles.active>
