@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -14,6 +15,27 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 @JsonSerialize(using=CountryISOJsonSerializer.class, as=String.class)
 @JsonDeserialize(using=CountryISOJsonDeserializer.class, as=String.class)
 public final class Country {
+	
+	public enum IbanLetterCodes {
+			b("National bank code"), 
+			s("Branch code"), 
+			x("National check digit"), 
+			c("Account number"),
+			t("Account type (Cheque account, Savings account etc)"), 
+			n("Owner account number (1, 2 etc)"),
+			g("Branch code (fr:code guichet)"),
+			k("IBAN check digits");
+			
+		private String description;
+
+		private IbanLetterCodes(String description) {
+			this.description = description;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+	}
 	
 	private static final CountryDAO DEFAULT = new CachedCountryDAO(new CSVCountryDAO());
 	
@@ -82,6 +104,10 @@ public final class Country {
     private String DS;
     private String WMO;
     private String MARC;
+    private String IBAN;
+    private String BBAN;
+    private int IBANCheckDigits;
+    private Pattern IBANPattern;
     private String[] locales;
     private String[] defaultForLanguages;
     private String region;
@@ -91,7 +117,8 @@ public final class Country {
     
     Country(String name, String ISO2, String ISO3, Integer ISOnumeric, String IANA, String ITU, 
     		String UNvehicle, String IOC, String FIPS, String FIFA, String DS, String WMO, String MARC,
-    		String region, String[] locales, String[] defaultForLanguages,
+    		String region, String BBAN, String IBAN, Integer IBANCheckDigits,
+    		String[] locales, String[] defaultForLanguages,
     		Map<String, String> localizedNames) {
         this.name = name;
         this.ISO2 = ISO2;
@@ -108,6 +135,11 @@ public final class Country {
         this.MARC = MARC;
         
         this.region = region;
+        
+        this.BBAN = BBAN;
+        this.IBAN = IBAN;
+        this.IBANCheckDigits = IBANCheckDigits;
+                
         this.locales = locales;
         this.defaultForLanguages = defaultForLanguages;
         
@@ -178,7 +210,66 @@ public final class Country {
     	return region;
     }
     
-    public String[] getDefaultForLanguages() {
+    public String getIBAN() {
+		return IBAN;
+	}
+    
+    public String getBBAN() {
+		return BBAN;
+	}
+    
+    /**
+     * 
+     * @return a regular expression to validate the IBAN.
+     */
+    public Pattern getIBANPattern() {
+    	if (IBANPattern == null) {
+    		if (IBAN == null || IBAN.length() == 0) {
+    			return null;
+    		}
+    		
+    		int i = 0;
+    		StringBuilder sb = new StringBuilder();
+    		for (String group : BBAN.split("\\s+")) {
+    			String g = null;
+    			switch (group.charAt(group.length() - 1)) {
+    				case 'a':
+    					g = "[A-Z]";
+    					break;
+    				case 'n':
+    					g = "[0-9]";
+    					break;
+    				case 'c':
+    					g = "[A-Z0-9]";
+    			}
+    			if (g == null) {
+    				continue;
+    			}
+    			
+    			group = group.substring(0, group.length() - 1);
+    			for (int x = Integer.parseInt(group); x > 0; x--) {
+    				sb.append(g);
+    				i++;
+    				if (i % 4 == 0) {
+    					sb.append("\\s?");
+    				}
+    			}
+    		}
+    		if (i % 4 == 0) {
+    			sb.delete(sb.length() - 3, sb.length());
+    		}
+    		IBANPattern = Pattern.compile(IBAN.substring(0, 2) 
+    				+ (IBANCheckDigits <= 0 ? "..\\s?" : (IBANCheckDigits < 10 ? "0" : "") + IBANCheckDigits) 
+    				+ sb.toString());
+    	}
+    	return IBANPattern;
+    }
+
+	public int getIBANCheckDigits() {
+		return IBANCheckDigits;
+	}
+
+	public String[] getDefaultForLanguages() {
     	return defaultForLanguages;
     }
  
