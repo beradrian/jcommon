@@ -1,22 +1,24 @@
 package net.sf.jcommon.geo;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
-
 public class CSVCountryDAO extends AbstractCountryDAO {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CSVCountryDAO.class);
-	private static final Splitter SPLITTER = Splitter.on(",").omitEmptyStrings().trimResults();
 
 	protected Collection<Country> loadCountries() throws IOException {
-    	char columnSeparator = ',';
+    	String columnSeparator = ",";
     	// open the resource file to read country information
     	BufferedReader in;
 		try {
@@ -27,7 +29,7 @@ public class CSVCountryDAO extends AbstractCountryDAO {
 				if (is == null) {
 		            LOG.warn("The resource file countries.tsv is not found. The library might be corrupted.");					
 				}
-				columnSeparator = '\t';
+				columnSeparator = "\t";
 			}
 			in = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 		} catch (UnsupportedEncodingException exc) {
@@ -39,61 +41,19 @@ public class CSVCountryDAO extends AbstractCountryDAO {
         }
 		
 		Collection<Country> countries = new HashSet<Country>();
-		String[] columnNames;
-		RowIterator rows = new RowIterator(in, columnSeparator);
-		if (rows.hasNext()) {
-			columnNames = Iterators.toArray(rows.next(), String.class);
-			while (rows.hasNext()) {
-				Map<String, String> countryColumns = new HashMap<String, String>();
-				Map<String, String> countryDisplayNames = new HashMap<String, String>();
-				ColumnIterator cols = rows.next();
-				int i = -1;
-				while (cols.hasNext()) {
-					i++;
-					if (i < columnNames.length) {
-						String columnName = columnNames[i].toLowerCase();
-						String columnValue = cols.next();
-						if (columnName.startsWith("name_")) {
-							countryDisplayNames.put(columnName.substring(5), columnValue);
-						} else {
-							countryColumns.put(columnName, columnValue);
-						}
-					}
-				}
-				if (!countryColumns.isEmpty()) {
-					String localesAsStr = countryColumns.get("locales");					
-					String[] locales = localesAsStr == null ? null 
-							: Iterables.toArray(SPLITTER.split(localesAsStr), String.class);
-					
-					String defaultForLangAsStr = countryColumns.get("default-for-lang");					
-					String[] defaultForLang = defaultForLangAsStr == null ? null 
-							: Iterables.toArray(SPLITTER.split(defaultForLangAsStr), String.class);
-					
-					int ison;
-					try {
-						ison = Integer.parseInt(countryColumns.get("ison"));
-					} catch (NumberFormatException exc) {
-						ison = -1;
-					}
-					
-					countries.add(new Country(
-							countryColumns.get("name"),
-							countryColumns.get("iso2"),
-							countryColumns.get("iso3"),
-							ison,
-							countryColumns.get("iana"),
-							countryColumns.get("itu"),
-							countryColumns.get("unv"),
-							countryColumns.get("ioc"),
-							countryColumns.get("fips"),
-							countryColumns.get("fifa"),
-							countryColumns.get("ds"),
-							countryColumns.get("wmo"),
-							countryColumns.get("marc"),
-							countryColumns.get("region"),
-							locales, defaultForLang, countryDisplayNames));
-				}
-		    }
+		String[] columnHeaders = in.readLine().split(columnSeparator);
+		
+		String line = in.readLine();
+		while (line != null) {
+			Map<String, String> properties = new HashMap<String, String>();
+			
+			String[] columns = line.split(columnSeparator);
+			for (int i = 0, n = Math.min(columnHeaders.length, columns.length); i < n; i++) {
+				properties.put(columnHeaders[i].toLowerCase(), columns[i].trim());
+			}
+			
+			countries.add(toCountry(properties));
+			line = in.readLine();
 		}
 		
 		if (countries.size() <= 0) {
@@ -104,112 +64,56 @@ public class CSVCountryDAO extends AbstractCountryDAO {
 		
 		return countries;
 	}
-
-    private static class RowIterator implements Iterator<ColumnIterator> {
-
-    	private BufferedReader in;
-    	private char columnSeparator;
-    	private ColumnIterator currentColumn;
-    	private String lastLine;
-
-		public RowIterator(BufferedReader in, char columnSeparator) {
-			this.in = in;
-			this.columnSeparator = columnSeparator;
-		}
-		
-		private String getNextLine() {
-			try {
-				String line = in.readLine();
-				if (line == null)
-					return null;
-				// skip the BOM character
-				if (line.charAt(0) == 0xfffe || line.charAt(0) == 0xfeff)
-					line = line.substring(1);
-				// skip empty lines
-				if (line.length() == 0)
-					return getNextLine();
-				return line;
-			} catch (IOException exc) {
-				LOG.warn("Error reading ", exc);
-				return null;
-			}
-		}
-
-		@Override
-		public boolean hasNext() {
-			return (lastLine!= null) || ((lastLine = getNextLine()) != null);
-		}
-
-		@Override
-		public ColumnIterator next() {
-			if (lastLine == null) {
-				lastLine = getNextLine();
-			}
-			if (lastLine != null) {
-				currentColumn = new ColumnIterator(lastLine, columnSeparator);
-				lastLine = null;
-				return currentColumn;
-			}
+	
+	private Country toCountry(Map<String, String> properties) {
+		if (properties.isEmpty()) {
 			return null;
 		}
-
-		@Override
-		public void remove() {
-			throw new IllegalStateException("This iterator does not support remove");
-		}
-    }
-    
-    private static class ColumnIterator implements Iterator<String> {
-    	private String source;
-    	private char separator;
-    	private int begin, end, current;
-
-		public ColumnIterator(String source, char separator) {
-			this.source = source;
-			this.separator = separator;
-		}
-
-		@Override
-		public boolean hasNext() {
-			return current < source.length();
-		}
-
-		@Override
-		public String next() {
-			if (current >= source.length())
-				return null;
-			begin = current;
-			end = -1;
-			if (current < source.length() && source.charAt(current) == '"') {
-				begin = current + 1;
-				current++;
-				while (current < source.length() && source.charAt(current) != '"') {
-					current++;
-				}
-				end = current;
-			} else if (current < source.length() && source.charAt(current) == '\'') {
-				begin = current + 1;
-				current++;
-				while (current < source.length() && source.charAt(current) != '\'') {
-					current++;
-				}
-				end = current;
+		
+		String localesAsStr = properties.get("locales");					
+		String[] locales = localesAsStr == null ? null : localesAsStr.split(" ");
+		
+		String defaultForLangAsStr = properties.get("default-for-lang");					
+		String[] defaultForLang = defaultForLangAsStr == null ? null : defaultForLangAsStr.split(" ");
+		
+		Map<String, String> displayNames = new HashMap<String, String>();
+		for (Map.Entry<String,String> e : properties.entrySet()) {
+			if (e.getKey().startsWith("name_")) {
+				displayNames.put(e.getKey().substring(5), e.getValue());
 			}
-			while (current < source.length() && source.charAt(current) != separator) {
-				current++;
-			}
-			if (end < 0)
-				end = current;
-			current++;
-			return source.substring(begin, end);
 		}
-
-		@Override
-		public void remove() {
-			throw new IllegalStateException("This iterator does not support remove");
+		
+		return new Country(
+				properties.get("name"),
+				properties.get("iso2"),
+				properties.get("iso3"),
+				parseInt(properties.get("ison"), -1),
+				properties.get("iana"),
+				properties.get("itu"),
+				properties.get("unv"),
+				properties.get("ioc"),
+				properties.get("fips"),
+				properties.get("fifa"),
+				properties.get("ds"),
+				properties.get("wmo"),
+				properties.get("marc"),
+				properties.get("region"),
+				properties.get("bban"),
+				properties.get("iban"),
+				parseInt(properties.get("ibancheckdigits"), 0),
+				locales, defaultForLang, displayNames);
+	}
+	
+	private Integer parseInt(String value, Integer defaultValue) {
+		Integer i;
+		try {
+			i = Integer.parseInt(value);
+		} catch (NumberFormatException exc) {
+			i = defaultValue;
 		}
-    }
-
+		return i;
+	}
+	
 	@Override
 	public Collection<Country> getAllCountries() {
 		try {

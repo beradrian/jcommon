@@ -6,21 +6,24 @@
 
 		<javaee.version>7.0</javaee.version>
 		<java.version>1.7</java.version>
+		<downloadSources>true</downloadSources>
+		<downloadJavadocs>true</downloadJavadocs>
 		<wtp.version>3.5</wtp.version>
+
 
 		<spring.version>3.2.4.RELEASE</spring.version>
 		<spring.security.version>3.1.4.RELEASE</spring.security.version>
+		<spring.profiles.active.env>dev</spring.profiles.active.env>
+
 		<slf4j.version>1.7.5</slf4j.version>
 
-		<hibernate.version>4.1.4.Final</hibernate.version>
-
-		<!-- What is the ORM framework used. Possible values: none, datanucleus -->
-		<orm.provider>datanucleus</orm.provider>
-		<datanucleus.core.version>3.2.8</datanucleus.core.version>
 
 		<!-- properties for SCSS -->
+		<css.output.style>expanded</css.output.style>
+		<css.build.option>--debug-info</css.build.option>
 		<scss.src.dir>${project.basedir}/src/main/scss</scss.src.dir>
 		<css.target.dir>${project.basedir}/src/main/webapp/res</css.target.dir>
+
 
 		<!-- properties for RequireJS -->
 		<requirejs.config.dir>${project.basedir}/src/main/requirejs-config</requirejs.config.dir>
@@ -33,10 +36,16 @@
 		<!-- where the JS 3rd party libraries reside -->
 		<js.lib.dir>${project.basedir}/lib/js</js.lib.dir>
 
+
+		<!-- What is the ORM framework used. Possible values: none, datanucleus -->
+		<orm.provider>datanucleus</orm.provider>
+		<datanucleus.core.version>3.2.9</datanucleus.core.version>
 		<!-- the folder associated with the groupId -->
 		<groupFolder>net/sf/jcommon</groupFolder>
 		<!-- pattern for domain model classes -->
 		<domainModel.classes>${groupFolder}/*.class</domainModel.classes>
+
+		<hibernate.version>4.1.4.Final</hibernate.version>
 	</properties>
 	<groupId>net.sf.jcommon</groupId>
 	<artifactId>common-web-app</artifactId>
@@ -197,6 +206,84 @@
 		</dependency>
 
 	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>3.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>2.4</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-fileupload</groupId>
+				<artifactId>commons-fileupload</artifactId>
+				<version>1.2.2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.datanucleus</groupId>
+				<artifactId>datanucleus-core</artifactId>
+				<version>${datanucleus.core.version}</version>
+				<scope>compile</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.datanucleus</groupId>
+				<artifactId>datanucleus-accessplatform-jpa-rdbms</artifactId>
+				<version>3.3.4</version>
+				<type>pom</type>
+				<exclusions>
+					<exclusion>
+						<groupId>org.datanucleus</groupId>
+						<artifactId>datanucleus-core</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.eclipse.persistence</groupId>
+				<artifactId>javax.persistence</artifactId>
+				<version>2.1.0</version>
+				<scope>runtime</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>5.1.23</version>
+				<scope>runtime</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>net.sf.ehcache</groupId>
+				<artifactId>ehcache</artifactId>
+				<version>2.6.0</version>
+				<scope>runtime</scope>
+				<type>pom</type>
+			</dependency>
+
+			<dependency>
+				<groupId>com.googlecode.ehcache-spring-annotations</groupId>
+				<artifactId>ehcache-spring-annotations</artifactId>
+				<version>1.2.0</version>
+				<type>jar</type>
+				<exclusions>
+					<exclusion>
+						<groupId>net.sf.ehcache</groupId>
+						<artifactId>ehcache-core</artifactId>
+					</exclusion>
+				</exclusions>
+				<scope>compile</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<repositories>
 		<repository>
@@ -379,50 +466,6 @@
 
 	<profiles>
 		<profile>
-			<id>dev</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<properties>
-				<spring.profiles.active.env>dev</spring.profiles.active.env>
-				<downloadSources>true</downloadSources>
-				<downloadJavadocs>true</downloadJavadocs>
-				<css.output.style>expanded</css.output.style>
-				<css.build.option>--debug-info</css.build.option>
-			</properties>
-
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-resources-plugin</artifactId>
-						<version>2.6</version>
-						<executions>
-							<execution>
-								<id>copy-resources</id>
-								<phase>validate</phase>
-								<goals>
-									<goal>copy-resources</goal>
-								</goals>
-								<configuration>
-									<outputDirectory>${js.target.dir}</outputDirectory>
-									<resources>
-										<resource>
-											<directory>${js.src.dir}</directory>
-										</resource>
-										<resource>
-											<directory>${js.lib.dir}</directory>
-										</resource>
-									</resources>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
-		<profile>
 			<id>qa</id>
 			<properties>
 				<spring.profiles.active.env>qa</spring.profiles.active.env>
@@ -438,198 +481,6 @@
 				<css.output.style>compressed</css.output.style>
 				<css.build.option>--no-debug-info</css.build.option>
 			</properties>
-
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
-						<artifactId>svn-revision-number-maven-plugin</artifactId>
-						<version>1.13</version>
-						<executions>
-							<execution>
-								<goals>
-									<goal>revision</goal>
-								</goals>
-							</execution>
-						</executions>
-						<dependencies>
-							<dependency>
-								<groupId>org.tmatesoft.svnkit</groupId>
-								<artifactId>svnkit</artifactId>
-								<version>1.8.0-SNAPSHOT</version>
-							</dependency>
-							<dependency>
-								<groupId>org.tmatesoft.sqljet</groupId>
-								<artifactId>sqljet</artifactId>
-								<version>1.1.6</version>
-							</dependency>
-							<dependency>
-								<groupId>de.regnis.q.sequence</groupId>
-								<artifactId>sequence-library</artifactId>
-								<version>1.0.2</version>
-							</dependency>
-						</dependencies>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
-		<profile>
-			<id>datanucleus</id>
-			<activation>
-				<property>
-					<name>orm.provider</name>
-					<value>datanucleus</value>
-				</property>
-			</activation>
-			<properties>
-				<spring.profiles.active.data>datanucleus</spring.profiles.active.data>
-				<spring.profiles.active>${spring.profiles.active.env},${spring.profiles.active.data}</spring.profiles.active>
-			</properties>
-			<dependencies>
-				<!-- DataNucleus core libraries must have runtime scope otherwise there 
-					is an error running DataNucleus Enhancer http://stackoverflow.com/questions/877949 -->
-				<dependency>
-					<groupId>org.datanucleus</groupId>
-					<artifactId>datanucleus-core</artifactId>
-					<version>${datanucleus.core.version}</version>
-					<scope>runtime</scope>
-				</dependency>
-				<dependency>
-					<groupId>org.datanucleus</groupId>
-					<artifactId>datanucleus-accessplatform-jpa-rdbms</artifactId>
-					<version>3.3.2</version>
-					<type>pom</type>
-					<exclusions>
-						<exclusion>
-							<groupId>org.datanucleus</groupId>
-							<artifactId>datanucleus-core</artifactId>
-						</exclusion>
-					</exclusions>
-				</dependency>
-				<dependency>
-					<groupId>org.eclipse.persistence</groupId>
-					<artifactId>javax.persistence</artifactId>
-					<version>2.1.0</version>
-					<scope>runtime</scope>
-				</dependency>
-			</dependencies>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.datanucleus</groupId>
-						<artifactId>datanucleus-maven-plugin</artifactId>
-						<version>3.3.0-release</version>
-						<dependencies>
-							<!-- Override the datanucles core version -->
-							<dependency>
-								<groupId>org.datanucleus</groupId>
-								<artifactId>datanucleus-core</artifactId>
-								<version>${datanucleus.core.version}</version>
-							</dependency>
-						</dependencies>
-						<configuration>
-							<log4jConfiguration>${project.build.outputDirectory}/log4j.properties</log4jConfiguration>
-							<verbose>true</verbose>
-							<api>JPA</api>
-							<fork>false</fork>
-							<metadataIncludes>${domainModel.classes}</metadataIncludes>
-						</configuration>
-						<executions>
-							<execution>
-								<id>datanucleus-ehancer</id>
-								<inherited>true</inherited>
-								<phase>process-classes</phase>
-								<goals>
-									<goal>enhance</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
-		<profile>
-			<id>scss</id>
-			<activation>
-				<file>
-					<exists>${scss.src.dir}</exists>
-				</file>
-			</activation>
-			<build>
-				<plugins>
-					<!-- - To install Sass and compass follow these steps - 1. Install Ruby 
-						from [http://rubyinstaller.org/downloads/]. Do not forget to check <code>Add 
-						Ruby executables to your PATH</code>. - 2. On the command line type <code>gem 
-						install [ - -http-proxy http://proxy:port ] sass</code> - 3. On the command 
-						line type <code>gem install [ - -http-proxy http://proxy:port ] compass</code> 
-						- For download issues try change the source: - gem source -r https://rubygems.org/ 
-						- gem source -a http://rubygems.org/ - - To generate CSSes: mvn generate-resources 
-						-P profile - Main SCSS files that will result in CSS files being generated 
-						starts without _ (underscore), - modules included in other files starts with 
-						_ -->
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>exec-maven-plugin</artifactId>
-						<version>1.1</version>
-						<executions>
-							<execution>
-								<phase>generate-resources</phase>
-								<goals>
-									<goal>exec</goal>
-								</goals>
-							</execution>
-						</executions>
-						<configuration>
-							<executable>compass</executable>
-							<arguments>
-								<argument>compile</argument>
-								<argument>--sass-dir</argument>
-								<argument>${scss.src.dir}</argument>
-								<argument>--css-dir</argument>
-								<argument>${css.target.dir}</argument>
-								<argument>--output-style</argument>
-								<argument>${css.output.style}</argument>
-								<argument>--force</argument>
-								<argument>${css.build.option}</argument>
-							</arguments>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
-		<profile>
-			<id>requirejs</id>
-			<activation>
-				<file>
-					<exists>${requirejs.config.dir}</exists>
-				</file>
-			</activation>
-			<build>
-				<plugins>
-					<!-- To run requirejs for a build profile config file. -->
-					<plugin>
-						<groupId>com.github.mcheely</groupId>
-						<artifactId>requirejs-maven-plugin</artifactId>
-						<version>2.0.0</version>
-						<executions>
-							<execution>
-								<phase>generate-resources</phase>
-								<goals>
-									<goal>optimize</goal>
-								</goals>
-							</execution>
-						</executions>
-						<configuration>
-							<configFile>${requirejs.config.mainFile}</configFile>
-							<optimizerFile>${requirejs.optimizerFile}</optimizerFile>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-
 		</profile>
 	</profiles>
 
@@ -642,7 +493,6 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<dependencies>
-					<!-- Added to resolve conflictin dependencies. See http://stackoverflow.com/questions/19732445/datanucleus-enhancer-conflicting-dependencies-in-maven-part-2 -->
 					<dependency>
 						<groupId>org.datanucleus</groupId>
 						<artifactId>datanucleus-core</artifactId>
@@ -718,6 +568,154 @@
 
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.6</version>
+					<executions>
+						<execution>
+							<id>copy-js</id>
+							<phase>validate</phase>
+							<goals>
+								<goal>copy-resources</goal>
+							</goals>
+							<configuration>
+								<outputDirectory>${js.target.dir}</outputDirectory>
+								<resources>
+									<resource>
+										<directory>${js.src.dir}</directory>
+									</resource>
+									<resource>
+										<directory>${js.lib.dir}</directory>
+									</resource>
+								</resources>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+
+
+				<!-- - To install Sass and compass follow these steps - 1. Install Ruby 
+					from [http://rubyinstaller.org/downloads/]. Do not forget to check <code>Add 
+					Ruby executables to your PATH</code>. - 2. On the command line type <code>gem 
+					install [ - -http-proxy http://proxy:port ] sass</code> - 3. On the command 
+					line type <code>gem install [ - -http-proxy http://proxy:port ] compass</code> 
+					- For download issues try change the source: - gem source -r https://rubygems.org/ 
+					- gem source -a http://rubygems.org/ - - To generate CSSes: mvn generate-resources 
+					-P profile - Main SCSS files that will result in CSS files being generated 
+					starts without _ (underscore), - modules included in other files starts with 
+					_ -->
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>exec-maven-plugin</artifactId>
+					<version>1.1</version>
+					<executions>
+						<execution>
+							<id>scss</id>
+							<phase>generate-resources</phase>
+							<goals>
+								<goal>exec</goal>
+							</goals>
+							<configuration>
+								<executable>compass</executable>
+								<arguments>
+									<argument>compile</argument>
+									<argument>--sass-dir</argument>
+									<argument>${scss.src.dir}</argument>
+									<argument>--css-dir</argument>
+									<argument>${css.target.dir}</argument>
+									<argument>--output-style</argument>
+									<argument>${css.output.style}</argument>
+									<argument>--force</argument>
+									<argument>${css.build.option}</argument>
+								</arguments>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+
+				<!-- To run requirejs for a build profile config file. -->
+				<plugin>
+					<groupId>com.github.mcheely</groupId>
+					<artifactId>requirejs-maven-plugin</artifactId>
+					<version>2.0.0</version>
+					<executions>
+						<execution>
+							<phase>generate-resources</phase>
+							<goals>
+								<goal>optimize</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<configFile>${requirejs.config.mainFile}</configFile>
+						<optimizerFile>${requirejs.optimizerFile}</optimizerFile>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.datanucleus</groupId>
+					<artifactId>datanucleus-maven-plugin</artifactId>
+					<version>3.3.0-release</version>
+					<dependencies>
+						<!-- Override the datanucles core version -->
+						<dependency>
+							<groupId>org.datanucleus</groupId>
+							<artifactId>datanucleus-core</artifactId>
+							<version>${datanucleus.core.version}</version>
+						</dependency>
+					</dependencies>
+					<configuration>
+						<log4jConfiguration>${project.build.outputDirectory}/log4j.properties</log4jConfiguration>
+						<verbose>true</verbose>
+						<api>JPA</api>
+						<fork>false</fork>
+						<metadataIncludes>${domainModel.classes}</metadataIncludes>
+					</configuration>
+					<executions>
+						<execution>
+							<id>datanucleus-ehancer</id>
+							<inherited>true</inherited>
+							<phase>process-classes</phase>
+							<goals>
+								<goal>enhance</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
+
+				<plugin>
+					<groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
+					<artifactId>svn-revision-number-maven-plugin</artifactId>
+					<version>1.13</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>revision</goal>
+							</goals>
+						</execution>
+					</executions>
+					<dependencies>
+						<dependency>
+							<groupId>org.tmatesoft.svnkit</groupId>
+							<artifactId>svnkit</artifactId>
+							<version>1.8.0-SNAPSHOT</version>
+						</dependency>
+						<dependency>
+							<groupId>org.tmatesoft.sqljet</groupId>
+							<artifactId>sqljet</artifactId>
+							<version>1.1.6</version>
+						</dependency>
+						<dependency>
+							<groupId>de.regnis.q.sequence</groupId>
+							<artifactId>sequence-library</artifactId>
+							<version>1.0.2</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+
+
 				<plugin>
 					<groupId>com.google.code.maven-replacer-plugin</groupId>
 					<artifactId>replacer</artifactId>
@@ -796,7 +794,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<execute></execute>
+										<ignore></ignore>
 									</action>
 								</pluginExecution>
 								<pluginExecution>

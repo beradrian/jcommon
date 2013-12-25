@@ -12,7 +12,7 @@ public class EnumELResolver extends ELResolver {
 		private String path;
 	}
 	
-	private String propertyName = "enumValues";
+	private String propertyName = "ENUMS";
 	private String defaultPackage;
 	
 	public EnumELResolver() {
@@ -76,6 +76,14 @@ public class EnumELResolver extends ELResolver {
 			if (enumClass != null) {
 				context.setPropertyResolved(true);
 				return enumClass.getEnumConstants();
+			}
+		}
+		if (base instanceof Enum<?>[]) {
+			for (Enum<?> e : (Enum<?>[])base) {
+				if (e.name().equals(property)) {
+					context.setPropertyResolved(true);
+					return e;
+				}
 			}
 		}
 		
