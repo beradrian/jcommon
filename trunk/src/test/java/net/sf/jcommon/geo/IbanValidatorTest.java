@@ -14,6 +14,9 @@ public class IbanValidatorTest {
 		assertTrue(v.apply("SA03 8000 0000 6080 1016 7519"));
 		assertTrue(v.apply("CH93 0076 2011 6238 5295 7"));
 		assertTrue(v.apply("IL62 0108 0000 0009 9999 999"));
+		assertTrue(v.apply("DE13700100800737828809"));
+		assertFalse(v.apply("DE13700100800737828808"));
+		assertTrue(v.apply("DE13 7001 0080 0737 8288 09"));
 	}
 	
 }
