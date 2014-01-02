@@ -10,7 +10,7 @@ import com.google.common.base.Predicate;
 
 public class IbanValidator implements ConstraintValidator<Iban, String>, Predicate<String> {
 
-    private static final long MAX = 999999999, MODULUS = 97;
+    private static final long MODULUS = 97;
 
     private boolean ignoreWhitespace = true;
     private Map<String, String> messages = new HashMap<String, String>();
@@ -31,8 +31,8 @@ public class IbanValidator implements ConstraintValidator<Iban, String>, Predica
 		}
 		
 		String reformattedCode = iban.substring(4) + iban.substring(0, 4);
-        long total = 0;
-        for (int i = 0; i < reformattedCode.length(); i++) {
+        long total = 0, p10 = 1;
+        for (int i = reformattedCode.length() - 1; i >= 0; i--) {
         	char ch = reformattedCode.charAt(i);
         	if (Character.isWhitespace(ch)) {
         		if (ignoreWhitespace) {
@@ -47,10 +47,8 @@ public class IbanValidator implements ConstraintValidator<Iban, String>, Predica
             	setMessage(context, "pattern");
                 return false;
             }
-            total = (charValue > 9 ? total * 100 : total * 10) + charValue;
-            if (total > MAX) {
-                total = (total % MODULUS);
-            }
+            total = (((charValue * p10) % MODULUS) + total) % MODULUS;
+            p10 = (p10 * ((charValue > 9 ? 100 : 10) % MODULUS)) % MODULUS;
         }
 
         if ((total % MODULUS) != 1) {
