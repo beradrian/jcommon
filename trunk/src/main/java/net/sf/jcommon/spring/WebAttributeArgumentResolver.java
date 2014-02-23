@@ -51,6 +51,12 @@ public class WebAttributeArgumentResolver implements WebArgumentResolver, Servle
 				default:
 					value = servletWebRequest.getRequest().getAttribute(annotation.value());
 			}
+			if (value == null) {
+				if (annotation.required()) {
+					throw new IllegalArgumentException("The attribute " + annotation.value() + " must be specified in " + annotation.scope());
+				}
+				return null;
+			}
 			if (!methodParameter.getParameterType().isInstance(value)) {
 				throw new ClassCastException("The attribute " + annotation.value() + " is not of the specified type.");
 			}

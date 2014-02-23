@@ -11,4 +11,6 @@ public @interface WebAttribute {
 	SCOPE scope() default SCOPE.REQUEST;
 	
 	String value();
+	
+	boolean required() default false;
 }
