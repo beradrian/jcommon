@@ -7,8 +7,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.Comparator;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import org.junit.Test;
 
 public class CountryTest {

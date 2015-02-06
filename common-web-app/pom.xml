@@ -1,65 +1,44 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<javaee.version>7.0</javaee.version>
-		<java.version>1.7</java.version>
-		<downloadSources>true</downloadSources>
-		<downloadJavadocs>true</downloadJavadocs>
-		<wtp.version>3.5</wtp.version>
-
-
-		<spring.version>3.2.4.RELEASE</spring.version>
-		<spring.security.version>3.1.4.RELEASE</spring.security.version>
-		<spring.profiles.active.env>dev</spring.profiles.active.env>
-
-		<slf4j.version>1.7.5</slf4j.version>
-
-
-		<!-- properties for SCSS -->
-		<css.output.style>expanded</css.output.style>
-		<css.build.option>--debug-info</css.build.option>
-		<scss.src.dir>${project.basedir}/src/main/scss</scss.src.dir>
-		<css.target.dir>${project.basedir}/src/main/webapp/res</css.target.dir>
-
-
-		<!-- properties for RequireJS -->
-		<requirejs.config.dir>${project.basedir}/src/main/requirejs-config</requirejs.config.dir>
-		<requirejs.config.mainFile>${requirejs.config.dir}/main.js</requirejs.config.mainFile>
-		<requirejs.optimizerFile>${requirejs.config.dir}/r.js</requirejs.optimizerFile>
-		<!-- where the JS files are copied -->
-		<js.target.dir>${project.basedir}/src/main/webapp/res/js</js.target.dir>
-		<!-- where the source JS files reside -->
-		<js.src.dir>${project.basedir}/src/main/js</js.src.dir>
-		<!-- where the JS 3rd party libraries reside -->
-		<js.lib.dir>${project.basedir}/lib/js</js.lib.dir>
-
-
-		<!-- What is the ORM framework used. Possible values: none, datanucleus -->
-		<orm.provider>datanucleus</orm.provider>
-		<datanucleus.core.version>3.2.9</datanucleus.core.version>
-		<!-- the folder associated with the groupId -->
-		<groupFolder>net/sf/jcommon</groupFolder>
-		<!-- pattern for domain model classes -->
-		<domainModel.classes>${groupFolder}/*.class</domainModel.classes>
-
-		<hibernate.version>4.1.4.Final</hibernate.version>
-	</properties>
 	<groupId>net.sf.jcommon</groupId>
 	<artifactId>common-web-app</artifactId>
 	<packaging>pom</packaging>
 	<version>1.0-SNAPSHOT</version>
 	<name>Common Web App</name>
 	<url>http://maven.apache.org</url>
-	<dependencies>
-		<dependency>
-			<groupId>net.sf.jcommon</groupId>
-			<artifactId>jcommon</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
-		</dependency>
 
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- 
+		<java.version>1.7</java.version>
+		<javaee.version>6.0</javaee.version>
+		<javaee.web.version>7.0</javaee.web.version>
+		<wtp.version>3.6</wtp.version>
+
+		<spring.version>4.1.2.RELEASE</spring.version>
+		<spring.security.version>3.2.5.RELEASE</spring.security.version>
+
+		<slf4j.version>1.7.5</slf4j.version>
+
+		<datanucleus.version>4.0.4</datanucleus.version>
+		<datanucleus.maven.plugin.version>4.0.0-release</datanucleus.maven.plugin.version>
+		<domainModel.folder>com/stefisoft/${project.artifactId}</domainModel.folder>
+		<domainModel.classes>${domainModel.folder}/*.class</domainModel.classes>
+
+		<scss.src.dir>${project.basedir}/src/main/scss</scss.src.dir>
+		<css.target.dir>${project.basedir}/src/main/webapp/res</css.target.dir>
+
+		<js.mainFile>src/main/js/index.js</js.mainFile>
+		<js.outFile>src/main/webapp/res/index.js</js.outFile>
+		 -->
+	</properties>
+
+
+	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -72,7 +51,7 @@
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-web-api</artifactId>
-			<version>${javaee.version}</version>
+			<version>${javaee.web.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -87,203 +66,17 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
-			<version>1.1.2</version>
+			<version>1.2</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-expression</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-tx</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-jdbc</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-aop</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-web</artifactId>
-			<version>${spring.security.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-config</artifactId>
-			<version>${spring.security.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-taglibs</artifactId>
-			<version>${spring.security.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-jpa</artifactId>
-			<!-- Do not upgrade to 1.4.1 - DN bug http://stackoverflow.com/questions/18937574/spring-data-error -->
-			<version>1.3.0.RELEASE</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-jdk14</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>14.0.1</version>
+			<groupId>net.sf.jcommon</groupId>
+			<artifactId>jcommon</artifactId>
+			<version>1.2.2</version>
 		</dependency>
 
 	</dependencies>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-lang3</artifactId>
-				<version>3.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>commons-io</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>2.4</version>
-			</dependency>
-
-			<dependency>
-				<groupId>commons-fileupload</groupId>
-				<artifactId>commons-fileupload</artifactId>
-				<version>1.2.2</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.datanucleus</groupId>
-				<artifactId>datanucleus-core</artifactId>
-				<version>${datanucleus.core.version}</version>
-				<scope>compile</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>org.datanucleus</groupId>
-				<artifactId>datanucleus-accessplatform-jpa-rdbms</artifactId>
-				<version>3.3.4</version>
-				<type>pom</type>
-				<exclusions>
-					<exclusion>
-						<groupId>org.datanucleus</groupId>
-						<artifactId>datanucleus-core</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
-			<dependency>
-				<groupId>org.eclipse.persistence</groupId>
-				<artifactId>javax.persistence</artifactId>
-				<version>2.1.0</version>
-				<scope>runtime</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>mysql</groupId>
-				<artifactId>mysql-connector-java</artifactId>
-				<version>5.1.23</version>
-				<scope>runtime</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>net.sf.ehcache</groupId>
-				<artifactId>ehcache</artifactId>
-				<version>2.6.0</version>
-				<scope>runtime</scope>
-				<type>pom</type>
-			</dependency>
-
-			<dependency>
-				<groupId>com.googlecode.ehcache-spring-annotations</groupId>
-				<artifactId>ehcache-spring-annotations</artifactId>
-				<version>1.2.0</version>
-				<type>jar</type>
-				<exclusions>
-					<exclusion>
-						<groupId>net.sf.ehcache</groupId>
-						<artifactId>ehcache-core</artifactId>
-					</exclusion>
-				</exclusions>
-				<scope>compile</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<repositories>
 		<repository>
@@ -328,6 +121,29 @@
 			</snapshots>
 		</repository>
 
+		<!-- For testing against latest Spring snapshots -->
+		<repository>
+			<id>org.springframework.maven.snapshot</id>
+			<name>Spring Maven Snapshot Repository</name>
+			<url>http://repo.springsource.org/snapshot</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+
+		<repository>
+			<id>spring-io--milestones</id>
+			<url>http://repo.spring.io/milestone</url>
+		</repository>
+
+		<repository>
+			<id>spring-milestones</id>
+			<url>http://repo.springsource.org/libs-milestone/</url>
+		</repository>
+
 		<repository>
 			<id>dist.wso2.org</id>
 			<name>dist.wso2.org</name>
@@ -368,14 +184,34 @@
 		</repository>
 
 		<repository>
-			<id>DataNucleus_Repos2</id>
-			<name>DataNucleus Repository</name>
-			<url>http://www.datanucleus.org/downloads/maven2</url>
+			<id>eap</id>
+			<url>http://maven.repository.redhat.com/techpreview/all</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
-
 	</repositories>
 
 	<pluginRepositories>
+		<pluginRepository>
+			<id>eap</id>
+			<url>http://maven.repository.redhat.com/techpreview/all</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+		
+		<pluginRepository>
+			<id>rzymek-snapshots</id>
+			<url>https://github.com/rzymek/repository/raw/master/snapshots</url>        
+		</pluginRepository>
+	  
 		<pluginRepository>
 			<id>pluginRepo1.maven.org</id>
 			<name>pluginRepo1.maven.org</name>
@@ -457,311 +293,507 @@
 			</releases>
 		</pluginRepository>
 
-		<pluginRepository>
-			<id>DataNucleus_pluginRepos2</id>
-			<name>DataNucleus pluginRepository</name>
-			<url>http://www.datanucleus.org/downloads/maven2</url>
-		</pluginRepository>
 	</pluginRepositories>
 
 	<profiles>
 		<profile>
-			<id>qa</id>
+			<id>dev</id>
+			<activation>
+				<property><name>spring.profiles.active</name><value>dev</value></property>
+			</activation>
 			<properties>
-				<spring.profiles.active.env>qa</spring.profiles.active.env>
+				<downloadSources>true</downloadSources>
+				<downloadJavadocs>true</downloadJavadocs>
+
+				<css.output.style>expanded</css.output.style>
+				<css.build.option>--debug-info</css.build.option>
+				
+				<js.build.option></js.build.option>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>qa</id>
+			<activation>
+				<property><name>spring.profiles.active</name><value>qa</value></property>
+			</activation>
+			<properties>
+				<spring.profiles.active>qa</spring.profiles.active>
+
 				<css.output.style>compressed</css.output.style>
 				<css.build.option>--no-debug-info</css.build.option>
+
+				<js.build.option></js.build.option>
 			</properties>
 		</profile>
 
 		<profile>
 			<id>pro</id>
+			<activation>
+				<property><name>spring.profiles.active</name><value>pro</value></property>
+			</activation>
 			<properties>
-				<spring.profiles.active.env>pro</spring.profiles.active.env>
+				<spring.profiles.active>pro</spring.profiles.active>
+
 				<css.output.style>compressed</css.output.style>
 				<css.build.option>--no-debug-info</css.build.option>
+
+				<js.build.option></js.build.option>
 			</properties>
 		</profile>
-	</profiles>
-
-	<build>
-		<finalName>${project.artifactId}</finalName>
-
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<dependencies>
-					<dependency>
+		
+		<profile>
+			<id>spring</id>
+			<activation>
+				<property><name>spring.version</name></property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-core</artifactId>
+					<version>${spring.version}</version>
+				</dependency>
+		
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-beans</artifactId>
+					<version>${spring.version}</version>
+				</dependency>
+		
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-expression</artifactId>
+					<version>${spring.version}</version>
+				</dependency>
+		
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-context-support</artifactId>
+					<version>${spring.version}</version>
+				</dependency>
+		
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-context</artifactId>
+					<version>${spring.version}</version>
+				</dependency>
+		
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-web</artifactId>
+					<version>${spring.version}</version>
+				</dependency>
+		
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-webmvc</artifactId>
+					<version>${spring.version}</version>
+				</dependency>
+		
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-tx</artifactId>
+					<version>${spring.version}</version>
+				</dependency>
+		
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-jdbc</artifactId>
+					<version>${spring.version}</version>
+				</dependency>
+		
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-orm</artifactId>
+					<version>${spring.version}</version>
+				</dependency>
+		
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-aop</artifactId>
+					<version>${spring.version}</version>
+				</dependency>
+		
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-test</artifactId>
+					<version>${spring.version}</version>
+					<scope>test</scope>
+				</dependency>
+					
+			</dependencies>
+		</profile>
+		
+		<profile>
+			<id>springsecurity</id>
+			<activation>
+				<property><name>spring.security.version</name></property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework.security</groupId>
+					<artifactId>spring-security-web</artifactId>
+					<version>${spring.security.version}</version>
+				</dependency>
+		
+				<dependency>
+					<groupId>org.springframework.security</groupId>
+					<artifactId>spring-security-config</artifactId>
+					<version>${spring.security.version}</version>
+				</dependency>
+		
+				<dependency>
+					<groupId>org.springframework.security</groupId>
+					<artifactId>spring-security-taglibs</artifactId>
+					<version>${spring.security.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+		
+		<profile>
+			<id>slf4j</id>
+			<activation>
+				<property><name>slf4j.version</name></property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+					<version>${slf4j.version}</version>
+				</dependency>
+		
+				<dependency>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-jdk14</artifactId>
+					<version>${slf4j.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+		
+		<profile>
+			<id>buildcss</id>
+			<activation>
+				<property><name>scss.src.dir</name></property>
+			</activation>
+			<properties>
+				<css.target.dir>${project.basedir}/src/main/webapp/res</css.target.dir>
+			</properties>
+			<build>
+				<plugins>
+					<!-- - To install Sass and compass follow these steps - 1. Install Ruby 
+						from [http://rubyinstaller.org/downloads/]. Do not forget to check <code>Add 
+						Ruby executables to your PATH</code>. - 2. On the command line type <code>gem 
+						install [ - -http-proxy http://proxy:port ] sass</code> - 3. On the command 
+						line type <code>gem install [ - -http-proxy http://proxy:port ] compass</code> 
+						- For download issues try change the source: - gem source -r https://rubygems.org/ 
+						- gem source -a http://rubygems.org/ - - To generate CSSes: mvn generate-resources 
+						-P profile - Main SCSS files that will result in CSS files being generated 
+						starts without _ (underscore), - modules included in other files starts with 
+						_ -->
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.1</version>
+						<executions>
+							<execution>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<executable>compass</executable>
+							<arguments>
+								<argument>compile</argument>
+								<argument>--sass-dir</argument>
+								<argument>${scss.src.dir}</argument>
+								<argument>--css-dir</argument>
+								<argument>${css.target.dir}</argument>
+								<argument>--output-style</argument>
+								<argument>${css.output.style}</argument>
+								<argument>--force</argument>
+								<argument>${css.build.option}</argument>
+							</arguments>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+		<profile>
+			<id>buildjs</id>
+			<activation>
+				<property><name>js.mainFile</name></property>
+			</activation>
+			<properties>
+				<js.outFile>src/main/webapp/res/index.js</js.outFile>		
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.1</version>
+						<executions>
+							<execution>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<executable>browserify</executable>
+							<arguments>
+								<argument>${js.mainFile}</argument>
+								<argument>-o</argument>
+								<argument>${js.outFile}</argument>
+							</arguments>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>	
+		
+		<profile>
+			<id>buildfont</id>
+			<activation>
+				<property><name>font.src.dir</name></property>
+			</activation>
+			<properties>
+				<font.src.dir>${basedir}/src/main/font</font.src.dir>
+				<font.output.dir>${basedir}/src/main/webapp/res/font</font.output.dir>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-clean-plugin</artifactId>
+						<version>2.6</version>
+						<configuration>
+							<filesets>
+								<fileset>
+									<directory>${font.output.dir}</directory>
+									<includes>
+										<include>${project.artifactId}-icons.*</include>
+									</includes>
+								</fileset>
+							</filesets>
+						</configuration>
+					</plugin>
+					<plugin>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>2.7</version>
+						<executions>
+							<execution>
+								<id>copy-resources</id>
+								<phase>validate</phase>
+								<goals><goal>copy-resources</goal></goals>
+								<configuration>
+									<outputDirectory>${font.output.dir}</outputDirectory>
+									<resources>
+										<resource>
+											<directory>${font.src.dir}</directory>
+											<includes><include>*.svg</include></includes>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.1</version>
+						<executions>
+							<execution>
+								<id>svg2ttf</id>
+								<phase>generate-resources</phase>
+								<goals><goal>exec</goal></goals>
+								<configuration>
+									<executable>svg2ttf</executable>
+									<arguments>
+										<argument>${font.src.dir}/${project.artifactId}-icons.svg</argument>
+										<argument>${font.output.dir}/${project.artifactId}-icons.ttf</argument>
+									</arguments>
+								</configuration>
+							</execution>
+							<execution>
+								<id>ttf2eot</id>
+								<phase>generate-resources</phase>
+								<goals><goal>exec</goal></goals>
+								<configuration>
+									<executable>ttf2eot</executable>
+									<arguments>
+										<argument>${font.output.dir}/${project.artifactId}-icons.ttf</argument>
+										<argument>${font.output.dir}/${project.artifactId}-icons.eot</argument>
+									</arguments>
+								</configuration>
+							</execution>
+							<execution>
+								<id>ttf2woff</id>
+								<phase>generate-resources</phase>
+								<goals><goal>exec</goal></goals>
+								<configuration>
+									<executable>ttf2woff</executable>
+									<arguments>
+										<argument>${font.output.dir}/${project.artifactId}-icons.ttf</argument>
+										<argument>${font.output.dir}/${project.artifactId}-icons.woff</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>	
+		
+		<profile>
+			<id>custom.web.xml</id>
+			<activation><activeByDefault>true</activeByDefault></activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.google.code.maven-replacer-plugin</groupId>
+						<artifactId>replacer</artifactId>
+						<version>1.5.2</version>
+						<executions>
+							<execution>
+								<phase>compile</phase>
+								<goals>
+									<goal>replace</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<file>src/main/webapp/WEB-INF/web.xml</file>
+							<outputFile>target/web.xml</outputFile>
+		
+							<namespaceContexts>
+								<javaee>http://java.sun.com/xml/ns/javaee</javaee>
+							</namespaceContexts>
+		
+							<regexFlags>
+								<regexFlag>CASE_INSENSITIVE</regexFlag>
+							</regexFlags>
+		
+							<replacements>
+								<!-- <replacement> <xpath>/javaee:web-app/javaee:context-param[javaee:param-name[string(.)='spring.profiles.active']]/javaee:param-value</xpath> 
+									<token>.*</token> <value>${spring.profiles.active}</value> </replacement> 
+									<replacement> <xpath>/javaee:web-app/javaee:display-name</xpath> <token>.*</token> 
+									<value>${project.name}</value> </replacement> -->
+		
+								<replacement>
+									<token>param-value.(local|dev|qa|pro)./param-value</token>
+									<value>param-value&gt;${spring.profiles.active}&lt;/param-value</value>
+								</replacement>
+		
+								<replacement>
+									<xpath>/javaee:web-app/javaee:context-param[javaee:param-name[string(.)='spring.profiles.active']]/javaee:param-value</xpath>
+									<token>.*</token>
+									<value>${spring.profiles.active}</value>
+								</replacement>
+	
+								<replacement>
+									<xpath>/javaee:web-app/javaee:display-name</xpath>
+									<token>.*</token>
+									<value>${project.name}</value>
+								</replacement>
+	
+								<replacement>
+									<token>@revision@</token>
+									<value>${${project.artifactId}.revision}</value>
+								</replacement>
+							</replacements>
+		
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+		<profile>
+			<id>datanucleus</id>
+			<activation>
+				<property><name>datanucleus.version</name></property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.datanucleus</groupId>
+					<artifactId>datanucleus-accessplatform-jpa-rdbms</artifactId>
+					<version>${datanucleus.version}</version>
+					<type>pom</type>
+				</dependency>
+				
+				<dependency>
+					<groupId>org.springframework.data</groupId>
+					<artifactId>spring-data-jpa</artifactId>
+					<version>1.3.0.RELEASE</version>
+				</dependency>
+		
+				<dependency>
+					<groupId>org.eclipse.persistence</groupId>
+					<artifactId>javax.persistence</artifactId>
+					<version>2.1.0</version>
+					<scope>runtime</scope>
+				</dependency>
+		
+				<dependency>
+					<groupId>com.jolbox</groupId>
+					<artifactId>bonecp</artifactId>
+					<version>0.8.0.RELEASE</version>
+					<scope>runtime</scope>
+				</dependency>
+			</dependencies>
+			<repositories>
+				<repository>
+					<id>DataNucleus_Repos2</id>
+					<name>DataNucleus Repository</name>
+					<url>http://www.datanucleus.org/downloads/maven2</url>
+				</repository>
+			</repositories>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>DataNucleus_pluginRepos2</id>
+					<name>DataNucleus pluginRepository</name>
+					<url>http://www.datanucleus.org/downloads/maven2</url>
+				</pluginRepository>			
+			</pluginRepositories>
+			<build>
+				<plugins>
+					<plugin>
 						<groupId>org.datanucleus</groupId>
-						<artifactId>datanucleus-core</artifactId>
-						<version>${datanucleus.core.version}</version>
-					</dependency>
-				</dependencies>
-				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-					<compilerVersion>${java.version}</compilerVersion>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.12</version>
-				<configuration>
-					<skipTests>false</skipTests>
-					<forkMode>pertest</forkMode>
-					<argLine>-Dspring.profiles.active=${spring.profiles.active}</argLine>
-				</configuration>
-			</plugin>
-
-			<!-- do not upgrade version or an error will appear in Eclipse http://stackoverflow.com/questions/7530284/org-codehaus-plexus-archiver-jar-jararchiver-unsupported-major-minor-version-49 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<archive>
-						<manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
-					</archive>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.9</version>
-				<configuration>
-					<wtpContextName>${project.artifactId}</wtpContextName>
-					<wtpversion>${wtp.version}</wtpversion>
-					<jeeversion>${javaee.version}</jeeversion>
-					<additionalProjectnatures>
-						<projectnature>org.eclipse.wst.common.project.facet.core.nature</projectnature>
-					</additionalProjectnatures>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.2</version>
-				<configuration>
-					<ignoreWebxml>true</ignoreWebxml>
-					<warSourceExcludes>**/.svn/**</warSourceExcludes>
-					<webResources>
-						<webResource>
-							<directory>target</directory>
-							<includes>
-								<include>web.xml</include>
-							</includes>
-							<targetPath>WEB-INF</targetPath>
-							<filtering>true</filtering>
-						</webResource>
-					</webResources>
-				</configuration>
-			</plugin>
-
-		</plugins>
-
+						<artifactId>datanucleus-maven-plugin</artifactId>
+						<version>${datanucleus.maven.plugin.version}</version>
+						<configuration>
+							<classpathElements>${project.compileClasspathElements}</classpathElements>
+							<log4jConfiguration>${project.build.outputDirectory}/log4j.properties</log4jConfiguration>
+							<verbose>true</verbose>
+							<enhancerName>ASM</enhancerName>
+							<api>JPA</api>
+							<fork>false</fork>
+							<metadataIncludes>${domainModel.classes}</metadataIncludes>
+							<generateConstructor>true</generateConstructor>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>process-classes</phase>
+								<goals>
+									<goal>enhance</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+	</profiles>
+	
+	
+	<build>
 		<pluginManagement>
 			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-resources-plugin</artifactId>
-					<version>2.6</version>
-					<executions>
-						<execution>
-							<id>copy-js</id>
-							<phase>validate</phase>
-							<goals>
-								<goal>copy-resources</goal>
-							</goals>
-							<configuration>
-								<outputDirectory>${js.target.dir}</outputDirectory>
-								<resources>
-									<resource>
-										<directory>${js.src.dir}</directory>
-									</resource>
-									<resource>
-										<directory>${js.lib.dir}</directory>
-									</resource>
-								</resources>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
-
-
-				<!-- - To install Sass and compass follow these steps - 1. Install Ruby 
-					from [http://rubyinstaller.org/downloads/]. Do not forget to check <code>Add 
-					Ruby executables to your PATH</code>. - 2. On the command line type <code>gem 
-					install [ - -http-proxy http://proxy:port ] sass</code> - 3. On the command 
-					line type <code>gem install [ - -http-proxy http://proxy:port ] compass</code> 
-					- For download issues try change the source: - gem source -r https://rubygems.org/ 
-					- gem source -a http://rubygems.org/ - - To generate CSSes: mvn generate-resources 
-					-P profile - Main SCSS files that will result in CSS files being generated 
-					starts without _ (underscore), - modules included in other files starts with 
-					_ -->
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>exec-maven-plugin</artifactId>
-					<version>1.1</version>
-					<executions>
-						<execution>
-							<id>scss</id>
-							<phase>generate-resources</phase>
-							<goals>
-								<goal>exec</goal>
-							</goals>
-							<configuration>
-								<executable>compass</executable>
-								<arguments>
-									<argument>compile</argument>
-									<argument>--sass-dir</argument>
-									<argument>${scss.src.dir}</argument>
-									<argument>--css-dir</argument>
-									<argument>${css.target.dir}</argument>
-									<argument>--output-style</argument>
-									<argument>${css.output.style}</argument>
-									<argument>--force</argument>
-									<argument>${css.build.option}</argument>
-								</arguments>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
-
-				<!-- To run requirejs for a build profile config file. -->
-				<plugin>
-					<groupId>com.github.mcheely</groupId>
-					<artifactId>requirejs-maven-plugin</artifactId>
-					<version>2.0.0</version>
-					<executions>
-						<execution>
-							<phase>generate-resources</phase>
-							<goals>
-								<goal>optimize</goal>
-							</goals>
-						</execution>
-					</executions>
-					<configuration>
-						<configFile>${requirejs.config.mainFile}</configFile>
-						<optimizerFile>${requirejs.optimizerFile}</optimizerFile>
-					</configuration>
-				</plugin>
-
-				<plugin>
-					<groupId>org.datanucleus</groupId>
-					<artifactId>datanucleus-maven-plugin</artifactId>
-					<version>3.3.0-release</version>
-					<dependencies>
-						<!-- Override the datanucles core version -->
-						<dependency>
-							<groupId>org.datanucleus</groupId>
-							<artifactId>datanucleus-core</artifactId>
-							<version>${datanucleus.core.version}</version>
-						</dependency>
-					</dependencies>
-					<configuration>
-						<log4jConfiguration>${project.build.outputDirectory}/log4j.properties</log4jConfiguration>
-						<verbose>true</verbose>
-						<api>JPA</api>
-						<fork>false</fork>
-						<metadataIncludes>${domainModel.classes}</metadataIncludes>
-					</configuration>
-					<executions>
-						<execution>
-							<id>datanucleus-ehancer</id>
-							<inherited>true</inherited>
-							<phase>process-classes</phase>
-							<goals>
-								<goal>enhance</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-
-
-				<plugin>
-					<groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
-					<artifactId>svn-revision-number-maven-plugin</artifactId>
-					<version>1.13</version>
-					<executions>
-						<execution>
-							<goals>
-								<goal>revision</goal>
-							</goals>
-						</execution>
-					</executions>
-					<dependencies>
-						<dependency>
-							<groupId>org.tmatesoft.svnkit</groupId>
-							<artifactId>svnkit</artifactId>
-							<version>1.8.0-SNAPSHOT</version>
-						</dependency>
-						<dependency>
-							<groupId>org.tmatesoft.sqljet</groupId>
-							<artifactId>sqljet</artifactId>
-							<version>1.1.6</version>
-						</dependency>
-						<dependency>
-							<groupId>de.regnis.q.sequence</groupId>
-							<artifactId>sequence-library</artifactId>
-							<version>1.0.2</version>
-						</dependency>
-					</dependencies>
-				</plugin>
-
-
-				<plugin>
-					<groupId>com.google.code.maven-replacer-plugin</groupId>
-					<artifactId>replacer</artifactId>
-					<version>1.5.2</version>
-					<executions>
-						<execution>
-							<phase>compile</phase>
-							<goals>
-								<goal>replace</goal>
-							</goals>
-						</execution>
-					</executions>
-					<configuration>
-						<file>src/main/webapp/WEB-INF/web.xml</file>
-						<outputFile>target/web.xml</outputFile>
-
-						<namespaceContexts>
-							<javaee>http://java.sun.com/xml/ns/javaee</javaee>
-						</namespaceContexts>
-
-						<regexFlags>
-							<regexFlag>CASE_INSENSITIVE</regexFlag>
-						</regexFlags>
-
-						<replacements>
-							<replacement>
-								<xpath>/javaee:web-app/javaee:context-param[javaee:param-name[string(.)='spring.profiles.active']]/javaee:param-value</xpath>
-								<token>.*</token>
-								<value>${spring.profiles.active}</value>
-							</replacement>
-
-							<replacement>
-								<xpath>/javaee:web-app/javaee:display-name</xpath>
-								<token>.*</token>
-								<value>${project.name}</value>
-							</replacement>
-
-							<replacement>
-								<token>@revision@</token>
-								<value>${${project.artifactId}.revision}</value>
-							</replacement>
-						</replacements>
-
-					</configuration>
-				</plugin>
-
 				<!--This plugin's configuration is used to store Eclipse m2e settings 
 					only. It has no influence on the Maven build itself. -->
 				<plugin>
@@ -794,7 +826,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<execute></execute>
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -856,4 +888,5 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+
 </project>

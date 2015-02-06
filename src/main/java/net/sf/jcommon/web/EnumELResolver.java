@@ -69,14 +69,15 @@ public class EnumELResolver extends ELResolver {
 				try {
 					enumClass = (Class<Enum<?>>) Class.forName(defaultPackage + path);
 				} catch (ClassNotFoundException e1) {
-					context.setPropertyResolved(true);
-					return base;
 				}
 			}
-			if (enumClass != null) {
+			if (enumClass != null && enumClass.isEnum()) {
 				context.setPropertyResolved(true);
 				return enumClass.getEnumConstants();
 			}
+			
+			context.setPropertyResolved(true);
+			return base;
 		}
 		if (base instanceof Enum<?>[]) {
 			for (Enum<?> e : (Enum<?>[])base) {
