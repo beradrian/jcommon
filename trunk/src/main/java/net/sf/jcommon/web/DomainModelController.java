@@ -1,31 +1,46 @@
 package net.sf.jcommon.web;
 
+import java.beans.PropertyEditorSupport;
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+
+import net.sf.jcommon.util.ReflectUtils;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.support.Repositories;
+import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 public abstract class DomainModelController<T, ID extends Serializable> {
 
+	private static final String FILTER_PARAM = "filter";
+	private static final String X_FILTER = "x-{" + FILTER_PARAM + "}";
 	private static final String ID_PARAM = "id";
+
+	private static final String HTML_SUFFIX = "";
+	private static final String XML_SUFFIX = ".xml";
+	private static final String JSON_SUFFIX = ".json";
+
 	/** The name under each the item is stored in the model. */
 	private static final String ITEM = "item";
 	/** The plural suffix for the item, added to the name under which items are stored in the model. */
 	private static final String[] PLURAL_SUFFIX = { "s", "es" };
 
+	protected static final String ALL = "all";
 	/** List of items mapping. */
-	protected static final String LIST = "list";
+	protected static final String MULTI_VIEW = "list";
 	/** Single item edit mapping. */
 	protected static final String EDIT = "edit";
 	/** Single item delete mapping. */
@@ -36,32 +51,46 @@ public abstract class DomainModelController<T, ID extends Serializable> {
 	@Autowired
 	private ApplicationContext applicationContext;
 
+	@Autowired 
+	private ConversionService conversionService;
+	
 	/** The model class */
 	private Class<T> modelClass;
 
 	private Repositories repositories;
 	private CrudRepository<T, ID> repository;
-
+	
 	@SuppressWarnings("unchecked")
 	protected DomainModelController() {
-		// this is necessary because of code injection for Spring MVC Controller
-		// in case that the super class is a class (most probably injected by Spring, then get the super of that super
-		// class
-		// this way we will move up the hierarchy, one level before DomainModelController
-		Class<?> superClass = this.getClass();
-		while (superClass.getSuperclass() != DomainModelController.class) {
-			superClass = superClass.getSuperclass();
+		modelClass = (Class<T>) ReflectUtils.getActualType(getClass(), DomainModelController.class, "T");
+		if (modelClass == null) {
+			throw new NullPointerException("Cannot determine actual domain model class for controller '" + getClass().getName() + "'");
 		}
-
-		// determine the model class by finding the parameterized type of this actual controller class
-		Type genericSuperClass = superClass.getGenericSuperclass();
-		// the model class is the class of the first generic argument
-		modelClass = (Class<T>) ((ParameterizedType) genericSuperClass).getActualTypeArguments()[0];
 	}
 
 	protected ApplicationContext getApplicationContext() {
 		return applicationContext;
 	}
+	
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(getRepositories().getEntityInformationFor(getModelClass()).getIdType(), 
+        		new PropertyEditorSupport() {
+            @Override
+            public String getAsText() {
+                return conversionService.convert(getRepositories().getEntityInformationFor(getModelClass())
+                		.getId(getValue()), String.class);
+            }
+
+            @Override
+            public void setAsText(final String text) {
+            	@SuppressWarnings("unchecked")
+				T t = getRepository().findOne((ID)conversionService
+            			.convert(text, getRepositories().getEntityInformationFor(getModelClass()).getIdType()));
+                setValue(t);
+            }
+        });
+    }
 
 	protected Class<T> getModelClass() {
 		return modelClass;
@@ -107,14 +136,24 @@ public abstract class DomainModelController<T, ID extends Serializable> {
 	 * 
 	 * @return the view name
 	 */
-	@RequestMapping(value = "/" + LIST)
-	public String list(Model model) {
-		Iterable<T> items = getRepository().findAll();
+	@RequestMapping(value = {"/", X_FILTER + HTML_SUFFIX})
+	public String viewSome(@PathVariable String filterName, Model model) {
+		Iterable<T> items = filter(filterName);
 		model.addAttribute(ITEM + PLURAL_SUFFIX[0], items);
 		for (int i = 0; i < PLURAL_SUFFIX.length; i++) {
 			model.addAttribute(getModelName() + PLURAL_SUFFIX[i], items);
 		}
-		return getModelName() + "/" + LIST;
+		return getModelName() + "/" + MULTI_VIEW;
+	}
+
+	@RequestMapping(value = { "/" + X_FILTER + JSON_SUFFIX, "/" + X_FILTER + XML_SUFFIX}, method = RequestMethod.GET, 
+			produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody Iterable<T> viewSome(@PathVariable(FILTER_PARAM) String filterName) {
+		return filter(filterName);
+	}
+	
+	protected Iterable<T> filter(String filterName) {
+		return getRepository().findAll();
 	}
 
 	/**
@@ -123,8 +162,8 @@ public abstract class DomainModelController<T, ID extends Serializable> {
 	 * 
 	 * @return the view name
 	 */
-	@RequestMapping(value = "/" + VIEW, method = RequestMethod.GET)
-	public String view(@RequestParam(value = ID_PARAM, required = false) ID id, Model model)
+	@RequestMapping(value = "/{" + ID_PARAM + "}" + HTML_SUFFIX, method = RequestMethod.GET)
+	public String view(@PathVariable(ID_PARAM) ID id, Model model)
 			throws InstantiationException, IllegalAccessException {
 		T t = null;
 		if (id != null) {
@@ -133,10 +172,19 @@ public abstract class DomainModelController<T, ID extends Serializable> {
 		if (t == null) {
 			throw new NoSuchItemException(getModelClass(), id);
 		}
-
-		model.addAttribute(ITEM, t);
-		model.addAttribute(getModelName(), t);
+		
+		return view(t, model);
+	}
+	
+	public String view(T t, Model model) {
+		registerMainItem(t, model);
 		return getModelName() + "/" + VIEW;
+	}
+	
+	@RequestMapping(value = {"/{" + ID_PARAM + "}" + XML_SUFFIX, "/{" + ID_PARAM + "}" + JSON_SUFFIX}, 
+			method = RequestMethod.GET, produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody T view(@PathVariable(ID_PARAM) ID id) {
+		return getRepository().findOne(id);
 	}
 
 	/**
@@ -146,8 +194,8 @@ public abstract class DomainModelController<T, ID extends Serializable> {
 	 * @param id the item id to edit or null if you want to add an item. This value is injected from request parameters.
 	 * @return the view name
 	 */
-	@RequestMapping(value = "/" + EDIT, method = RequestMethod.GET)
-	public String addOrEdit(@RequestParam(value = ID_PARAM, required = false) ID id, Model model)
+	@RequestMapping(value = "/{" + ID_PARAM + "}" + HTML_SUFFIX, method = RequestMethod.GET, params = EDIT)
+	public String addOrEdit(@PathVariable(ID_PARAM) ID id, Model model)
 			throws InstantiationException, IllegalAccessException {
 		T t;
 		if (id != null) {
@@ -158,10 +206,18 @@ public abstract class DomainModelController<T, ID extends Serializable> {
 		} else {
 			t = getModelClass().newInstance();
 		}
-
-		model.addAttribute(ITEM, t);
-		model.addAttribute(getModelName(), t);
+		registerMainItem(t, model);
 		return getModelName() + "/" + EDIT;
+	}
+	
+	@RequestMapping(value = "/" + HTML_SUFFIX, method = RequestMethod.GET, params = EDIT)
+	public String add(Model model) throws InstantiationException, IllegalAccessException {
+		return addOrEdit(null, model);
+	}
+
+	protected void registerMainItem(T t, Model model) {
+		model.addAttribute(ITEM, t);
+		model.addAttribute(getModelName(), t);		
 	}
 
 	/**
@@ -170,12 +226,46 @@ public abstract class DomainModelController<T, ID extends Serializable> {
 	 * @return the view name
 	 */
 	@Transactional
-	@RequestMapping(value = "/" + DELETE, method = RequestMethod.GET)
-	public String delete(@RequestParam(value = ID_PARAM, required = true) ID[] ids) {
+	@RequestMapping(value = "/x-" + DELETE + HTML_SUFFIX, method = RequestMethod.GET)
+	public String deleteAndView(@RequestParam(value = ID_PARAM, required = true) ID[] ids) {
+		delete(ids);
+		return "redirect:.";
+	}
+	
+	/**
+	 * Deletes one or more items by their ids. This method is intended to be used from AJAX. 
+	 * @return "OK" in case of success
+	 */
+	@RequestMapping(value = "/", method = RequestMethod.DELETE)
+	public @ResponseBody String delete(@RequestParam(value = ID_PARAM, required = true) ID[] ids) {
 		for (ID id : ids) {
-			getRepository().delete(id);
+			deleteOne(id);
 		}
-		return "redirect:" + LIST;
+		return "OK";
 	}
 
+	@RequestMapping(value = "/", method = RequestMethod.GET, params = DELETE)
+	public @ResponseBody String deleteWithGet(@RequestParam(value = ID_PARAM, required = true) ID[] ids) {
+		return delete(ids);
+	}
+		
+	@RequestMapping(value = "/{" + ID_PARAM + "}", method = RequestMethod.DELETE)
+	public @ResponseBody String deleteOne(@PathVariable(ID_PARAM) ID id) {
+		getRepository().delete(id);
+		return "OK";
+	}
+
+	@RequestMapping(value = "/{" + ID_PARAM + "}", method = RequestMethod.GET, params = DELETE)
+	public String deleteOneWithGetAndView(@PathVariable(ID_PARAM) ID id) {
+		deleteOne(id);
+		return "redirect:.";
+	}
+	
+	@RequestMapping(value = {"/{" + ID_PARAM + "}" + XML_SUFFIX, "/{" + ID_PARAM + "}" + JSON_SUFFIX}, 
+			method = RequestMethod.GET, params = DELETE)
+	public @ResponseBody String deleteOneWithGet(@PathVariable(ID_PARAM) ID id) {
+		deleteOne(id);
+		return "OK";
+	}
+	
 }
