@@ -2,6 +2,7 @@ package net.sf.jcommon.geo;
 
 public class GeoPoint {
 
+	private static final String SEPARATOR = ",";
 	private double latitude, longitude, altitude;
 
 	public GeoPoint() {
@@ -39,6 +40,11 @@ public class GeoPoint {
 
 	public void setAltitude(double altitude) {
 		this.altitude = altitude;
+	}
+
+	@Override
+	public String toString() {
+		return latitude + SEPARATOR + longitude + SEPARATOR + altitude;
 	}
 
 }

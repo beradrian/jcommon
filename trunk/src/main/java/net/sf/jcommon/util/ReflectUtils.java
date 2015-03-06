@@ -26,7 +26,7 @@ public final class ReflectUtils {
 	}
 	
 	/**
-	 * 
+	 * Finds the class before the ancestor in the hierarchy starting at the descendant 
 	 * @param descendant the starting class
 	 * @param ancestor the ancestor class
 	 * @return the closest class in the hierarchy to the ancestor
@@ -38,6 +38,13 @@ public final class ReflectUtils {
 		return descendant;
 	}
 	
+	/**
+	 * Given a parameterized class and the generic ancestor one, finds the actual type of a type name
+	 * @param actualClass the parameterized class
+	 * @param genericClass the generic ancestor class
+	 * @param typeName the type name as it appears in the generic ancestor class declaration
+	 * @return the actual type for the specified type name 
+	 */
 	public static Class<?> getActualType(Class<?> actualClass, Class<?> genericClass, String typeName) {
 		Class<?> s = getClosestClass(actualClass, genericClass);
 		if (s == null) {

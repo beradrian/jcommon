@@ -7,12 +7,11 @@ import javax.validation.Payload;
 
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = IbanValidator.class)
+@Constraint(validatedBy = CnpValidator.class)
 @Documented
-public @interface Iban {
+public @interface Cnp {
     Class<? extends Payload>[] payload() default {};
     Class<?>[] groups() default {};
     
-	String message() default "iban.invalid";
-	boolean ignoreWhitespace() default true;
+	String message() default "cnp.invalid";
 }

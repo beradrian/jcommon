@@ -1,19 +1,22 @@
 package net.sf.jcommon.geo;
 
-import java.io.Serializable;
+import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
+import java.util.Locale;
+
+import net.sf.jcommon.geo.persistence.CountryIsoJsonDeserializer;
+import net.sf.jcommon.geo.persistence.CountryIsoJsonSerializer;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 
 /**
  * An object representing a country and all its code and other relevant information associated.
  */
-@JsonSerialize(using=CountryISOJsonSerializer.class, as=String.class)
-@JsonDeserialize(using=CountryISOJsonDeserializer.class, as=String.class)
+@JsonSerialize(using=CountryIsoJsonSerializer.class, as=String.class)
+@JsonDeserialize(using=CountryIsoJsonDeserializer.class, as=String.class)
 public final class Country {
 	
 	public enum IbanLetterCodes {
@@ -37,64 +40,99 @@ public final class Country {
 		}
 	}
 	
-	private static final CountryDAO DEFAULT = new CachedCountryDAO(new CSVCountryDAO());
-	
-	public static CountryDAO getCountries() {
-		return DEFAULT;
-	}
+	public enum BbanLetterCodes {
+		a("alpha", "[A-Z]"), n("numeric", "[0-9]"), c("character", "[A-Z0-9]");
 
-	private static <T> int compareNulls(Comparable<T> c1, T c2) {
-		if (c1 == null)
-			return c2 == null ? 0 : -1;
-		if (c2 == null)
-			return 1;
-		return c1.compareTo(c2);
-	}
-	
-	@SuppressWarnings("serial")
-	public static class NameComparator implements Comparator<Country>, Serializable {
-		public int compare(Country c1, Country c2) {
-            return c1 == null ? (c2 == null ? 0 : -1) 
-            		: (c2 == null ? 1 : (c1.getName() == null ? (c2.getName() == null ? 0 : -1) 
-            			: c1.getName().compareTo(c2.getName())));
-            		
-        }
-    }
+		private String description;
+		private String regex;
 
-	@SuppressWarnings("serial")
-	public static class DisplayNameComparator implements Comparator<Country>, Serializable {
-		private String language;
-		
-		public DisplayNameComparator(String language) {
-			this.language = language;
+		private BbanLetterCodes(String description, String regex) {
+			this.description = description;
+			this.regex = regex;
 		}
 
-		public int compare(Country c1, Country c2) {
-			if (c1 == null)
-				return c2 == null ? 0 : -1;
-			if (c2 == null)
-				return 1;
-			String name1 = c1.getLocalizedName(language);
-			if (name1 == null)
-				name1 = c1.getName();
-			String name2 = c2.getLocalizedName(language);
-			if (name2 == null)
-				name2 = c2.getName();
-			return compareNulls(name1, name2);
-        }
-    }
+		public String getDescription() {
+			return description;
+		}
 
-    @SuppressWarnings("serial")
-	public static class ISO2Comparator implements Comparator<Country>, Serializable {
-        public int compare(Country c1, Country c2) {
-            return c1.getISO2().compareTo(c2.getISO2());
-        }
-    }
+		public String getRegex() {
+			return regex;
+		}
+	}
+	
+	private static final Collection<Country> COUNTRIES = new CSVCountryLoader().loadAllCountries();
+	private static final Collection<Country> ISO_COUNTRIES = Sets.newHashSet(Iterables.filter(COUNTRIES, CountryPredicates.isIso()));
+	
+	public static Collection<Country> getCountries() {
+		return COUNTRIES;
+	}
+
+	public static Collection<Country> getIsoCountries() {
+		return ISO_COUNTRIES;
+	}
+
+	public static Country findByIso(String iso) {
+		return Iterables.find(COUNTRIES, CountryPredicates.iso(iso), null);
+	}
+	
+	public static class Comparators {
+		private Comparators() {}
+		
+		public static Comparator<Country> NAME = new Comparator<Country>() {
+			public int compare(Country c1, Country c2) {
+	            return c1 == null ? (c2 == null ? 0 : -1) 
+	            		: (c2 == null ? 1 : (c1.getName() == null ? (c2.getName() == null ? 0 : -1) 
+	            			: c1.getName().compareTo(c2.getName())));
+	            		
+	        }
+	    };
+	
+	    public static Comparator<Country> ISO2 = new Comparator<Country>() {
+	        public int compare(Country c1, Country c2) {
+	            return c1.getIso2().compareTo(c2.getIso2());
+	        }
+	    };
+	    
+		private static class DisplayNameComparator implements Comparator<Country> {
+			private Locale inLocale;
+			
+			public DisplayNameComparator(Locale inLocale) {
+				this.inLocale = inLocale;
+			}
+	
+			public int compare(Country c1, Country c2) {
+				if (c1 == null)
+					return c2 == null ? 0 : -1;
+				if (c2 == null)
+					return 1;
+				String name1 = c1.getDisplayName(inLocale);
+				if (name1 == null)
+					name1 = c1.getName();
+				String name2 = c2.getDisplayName(inLocale);
+				if (name2 == null)
+					name2 = c2.getName();
+				return compareNulls(name1, name2);
+	        }
+	
+			private static <T> int compareNulls(Comparable<T> c1, T c2) {
+				if (c1 == null)
+					return c2 == null ? 0 : -1;
+				if (c2 == null)
+					return 1;
+				return c1.compareTo(c2);
+			}
+	    }
+		
+		public static Comparator<Country> displayName(Locale inLocale) {
+			return new DisplayNameComparator(inLocale);
+		}
+		
+	}
 
     private String name;
-    private String ISO2;
-    private String ISO3;
-    private int ISOnumeric;
+    private String iso2;
+    private String iso3;
+    private int isoNumeric;
     private String IANA;
     private String ITU;
     private String UNvehicle;
@@ -107,23 +145,16 @@ public final class Country {
     private String IBAN;
     private String BBAN;
     private int IBANCheckDigits;
-    private Pattern IBANPattern;
-    private String[] locales;
-    private String[] defaultForLanguages;
     private String region;
-    private Map<String, String> localizedNames = new HashMap<String, String>();
+    private Locale locale;
 
-    Country() {}
-    
-    Country(String name, String ISO2, String ISO3, Integer ISOnumeric, String IANA, String ITU, 
+	Country(String name, String ISO2, String ISO3, Integer ISOnumeric, String IANA, String ITU, 
     		String UNvehicle, String IOC, String FIPS, String FIFA, String DS, String WMO, String MARC,
-    		String region, String BBAN, String IBAN, Integer IBANCheckDigits,
-    		String[] locales, String[] defaultForLanguages,
-    		Map<String, String> localizedNames) {
+    		String region, String BBAN, String IBAN, Integer IBANCheckDigits) {
         this.name = name;
-        this.ISO2 = ISO2;
-        this.ISO3 = ISO3;
-        this.ISOnumeric = ISOnumeric;
+        this.iso2 = ISO2;
+        this.iso3 = ISO3;
+        this.isoNumeric = ISOnumeric;
         this.IANA = IANA;
         this.ITU = ITU;
         this.UNvehicle = UNvehicle;
@@ -139,31 +170,28 @@ public final class Country {
         this.BBAN = BBAN;
         this.IBAN = IBAN;
         this.IBANCheckDigits = IBANCheckDigits;
-                
-        this.locales = locales;
-        this.defaultForLanguages = defaultForLanguages;
         
-        this.localizedNames = localizedNames;
+        this.locale = new Locale("", iso2);
     }
-
+	
     public String getName() {
         return name;
     }
 
-    public int getISOnumeric() {
-        return ISOnumeric;
+    public int getIsoNumeric() {
+        return isoNumeric;
     }
 
-    public String getISO() {
-        return ISO2;
+    public String getIso() {
+        return iso2;
     }
 
-    public String getISO2() {
-        return ISO2;
+    public String getIso2() {
+        return iso2;
     }
 
-    public String getISO3() {
-        return ISO3;
+    public String getIso3() {
+        return iso3;
     }
 
     public String getIANA() {
@@ -202,10 +230,6 @@ public final class Country {
         return MARC;
     }
     
-    public String[] getLocales() {
-    	return locales;
-    }
-    
     public String getRegion() {
     	return region;
     }
@@ -218,111 +242,34 @@ public final class Country {
 		return BBAN;
 	}
     
-    /**
-     * 
-     * @return a regular expression to validate the IBAN.
-     */
-    public Pattern getIBANPattern() {
-    	if (IBANPattern == null) {
-    		if (IBAN == null || IBAN.length() == 0) {
-    			return null;
-    		}
-    		
-    		int i = 0;
-    		StringBuilder sb = new StringBuilder();
-    		for (String group : BBAN.split("\\s+")) {
-    			String g = null;
-    			switch (group.charAt(group.length() - 1)) {
-    				case 'a':
-    					g = "[A-Z]";
-    					break;
-    				case 'n':
-    					g = "[0-9]";
-    					break;
-    				case 'c':
-    					g = "[A-Z0-9]";
-    			}
-    			if (g == null) {
-    				continue;
-    			}
-    			
-    			group = group.substring(0, group.length() - 1);
-    			for (int x = Integer.parseInt(group); x > 0; x--) {
-    				sb.append(g);
-    				i++;
-    				if (i % 4 == 0) {
-    					sb.append("\\s?");
-    				}
-    			}
-    		}
-    		if (i % 4 == 0) {
-    			sb.delete(sb.length() - 3, sb.length());
-    		}
-    		IBANPattern = Pattern.compile(IBAN.substring(0, 2) 
-    				+ (IBANCheckDigits <= 0 ? "..\\s?" : (IBANCheckDigits < 10 ? "0" : "") + IBANCheckDigits) 
-    				+ sb.toString());
-    	}
-    	return IBANPattern;
-    }
-
 	public int getIBANCheckDigits() {
 		return IBANCheckDigits;
 	}
 
-	public String[] getDefaultForLanguages() {
-    	return defaultForLanguages;
-    }
- 
-    /**
-     * @return the language for this country or the first/default if there are multiple language 
-     */
-    public String getLanguage() {
-    	if (locales == null || locales.length <= 0) {
-    		return null;
-    	}
-		String l = locales[0];
-    	int i = l.indexOf("-");
-    	return (i > 0) ? l.substring(0, i) : l;
-    }
-    
-    /**
-     * Checks if the given language is an official or spoken language for this country.
-     * @param ll the language code
-     * @return true if the given language is an official or spoken language, false otherwise
-     */
-    public boolean hasLanguage(String ll) {
-    	if (locales == null || locales.length <= 0) {
-    		return false;
-    	}
-    	// check to see if ll conforms to the standard
-    	if (ll == null || ll.length() != 2) return false;
-    	for (String locale : locales) {
-    		if (locale.startsWith(ll)) return true;
-    	}
-    	return false;
-    }
+    public String getDisplayName() {
+    	return locale.getDisplayName();
+	}
 
-    public String toString() {
+    public String getDisplayName(Locale inLocale) {
+    	return locale.getDisplayName(inLocale);
+	}
+
+	public Locale getLocale() {
+		return locale;
+	}
+
+	public String toString() {
         return name;
     }
     
     @Override
 	public int hashCode() {
-		return ISO2.hashCode();
+		return iso2.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object that) {
-		return that instanceof Country && ISO2.equals(((Country)that).ISO2);
+		return that instanceof Country && iso2.equals(((Country)that).iso2);
 	}
 
-	public String getLocalizedName(String language) {
-    	String displayName = localizedNames.get(language.toLowerCase());
-    	return (displayName == null ? name : displayName);
-    }
-    
-	/** To be used in JSTL as custom function. */
-    public static String getLocalizedName(Country country, String language) {
-    	return country.getLocalizedName(language);
-    }
 }
