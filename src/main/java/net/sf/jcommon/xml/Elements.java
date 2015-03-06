@@ -1,6 +1,7 @@
 package net.sf.jcommon.xml;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -16,6 +17,52 @@ public class Elements {
     /** Use only the static methods. */
     private Elements() {
     }
+    
+    private static class IterableNodeList implements Iterable<Node> {
+    	private NodeList nodes;
+    	
+    	public IterableNodeList(NodeList nodes) {
+    		this.nodes = nodes;
+    	}
+
+    	@Override
+    	public Iterator<Node> iterator() {
+    		return new NodeListIterator(nodes);
+    	}
+    }
+    
+    /**
+     * An iterator through a list of XML nodes. At creation it will receive a list of nodes and it will act as an iterator
+     * through them.
+     */
+    private static class NodeListIterator implements Iterator<Node> {
+
+        /** The iterated node list */
+        private NodeList nodeList;
+        /** The current index. */
+        private int index = 0;
+
+        public NodeListIterator(NodeList nodeList) {
+            this.nodeList = nodeList;
+        }
+
+        public void remove() {
+            Node oldNode = nodeList.item(index);
+            oldNode.getParentNode().removeChild(oldNode);
+        }
+
+        public boolean hasNext() {
+            return index < nodeList.getLength();
+        }
+
+        public Node next() {
+            if (hasNext()) {
+                return nodeList.item(index++);
+            }
+            throw new NoSuchElementException();
+        }
+    }
+
 
     public static Iterable<Node> asIterable(NodeList nodeList) {
     	return new IterableNodeList(nodeList);
@@ -25,8 +72,12 @@ public class Elements {
     	return new NodeListIterator(nodeList);
     }
     
-    public static Iterator<Node> getChildrenAsIterator(Element e) {
-    	return new ChildrenIterator(e);
+    public static Iterator<Node> childrenAsIterator(Element e) {
+    	return asIterator(e.getChildNodes());
+    }
+    
+    public static Iterable<Node> childrenAsIterable(Element e) {
+    	return asIterable(e.getChildNodes());
     }
     
     /** Removes blank string elements from element x and its children.
@@ -42,7 +93,7 @@ public class Elements {
      */
     public static void removeBlankStrings(Element element, boolean recursive) {
         if (element == null) return;
-        for (Iterator<Node> it = new ChildrenIterator(element); it.hasNext();) {
+        for (Iterator<Node> it = childrenAsIterator(element); it.hasNext();) {
             Node child = it.next();
             if ((child instanceof Text) && (((Text) child).getTextContent().trim().length() <= 0)) {
                 it.remove();
@@ -64,17 +115,6 @@ public class Elements {
             x = x.getParentNode();
         }
         return (Element)x.getParentNode();
-    }
-
-    /** Returns the ancestor of the given element.
-     * @param e the element
-     */
-    public static Node getAncestor(Node e) {
-        Node x = e;
-        while (x.getParentNode() != null) {
-            x = x.getParentNode();
-        }
-        return x;
     }
 
     /**

@@ -2,16 +2,14 @@ package net.sf.jcommon.persistence;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.persistence.AttributeConverter;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
-public abstract class CollectionOfEnumsToStringAttributeConverter<T extends Enum<T>> implements AttributeConverter<Collection<T>, String> {
+public abstract class CollectionOfEnumsToStringAttributeConverter<T extends Enum<T>, C extends Collection<T>> implements AttributeConverter<C, String> {
 
 	private static final String DEFAULT_SEPARATOR = ",";
 
@@ -30,15 +28,15 @@ public abstract class CollectionOfEnumsToStringAttributeConverter<T extends Enum
 	}	
 	
 	@Override
-	public String convertToDatabaseColumn(Collection<T> attributeObject) {
+	public String convertToDatabaseColumn(C attributeObject) {
 		return attributeObject == null ? null : Joiner.on(getSeparator()).join(attributeObject);
 	}
 
 	@Override
-	public Collection<T> convertToEntityAttribute(String datastoreValue) {
+	public C convertToEntityAttribute(String datastoreValue) {
 		if (datastoreValue == null)
 			return null;
-		List<T> values = new ArrayList<T>();
+		C values = createCollection();
 		if (datastoreValue.length() == 0)
 			return values;
 		for (String s : Splitter.on(getSeparator()).split(datastoreValue)) {
@@ -49,5 +47,7 @@ public abstract class CollectionOfEnumsToStringAttributeConverter<T extends Enum
 		}
 		return values;
 	}
+
+	protected abstract C createCollection();
 
 }

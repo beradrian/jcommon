@@ -23,6 +23,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+
 public abstract class DomainModelController<T, ID extends Serializable> {
 
 	private static final String FILTER_PARAM = "filter";
@@ -137,7 +140,7 @@ public abstract class DomainModelController<T, ID extends Serializable> {
 	 * @return the view name
 	 */
 	@RequestMapping(value = {"/", X_FILTER + HTML_SUFFIX})
-	public String viewSome(@PathVariable String filterName, Model model) {
+	public String viewSome(@PathVariable(FILTER_PARAM) String filterName, Model model) {
 		Iterable<T> items = filter(filterName);
 		model.addAttribute(ITEM + PLURAL_SUFFIX[0], items);
 		for (int i = 0; i < PLURAL_SUFFIX.length; i++) {
@@ -153,7 +156,7 @@ public abstract class DomainModelController<T, ID extends Serializable> {
 	}
 	
 	protected Iterable<T> filter(String filterName) {
-		return getRepository().findAll();
+		return Iterables.filter(getRepository().findAll(), checkViewAccessPredicate);
 	}
 
 	/**
@@ -177,6 +180,7 @@ public abstract class DomainModelController<T, ID extends Serializable> {
 	}
 	
 	public String view(T t, Model model) {
+		checkAccess(t, OperationType.VIEW);
 		registerMainItem(t, model);
 		return getModelName() + "/" + VIEW;
 	}
@@ -184,7 +188,9 @@ public abstract class DomainModelController<T, ID extends Serializable> {
 	@RequestMapping(value = {"/{" + ID_PARAM + "}" + XML_SUFFIX, "/{" + ID_PARAM + "}" + JSON_SUFFIX}, 
 			method = RequestMethod.GET, produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
 	public @ResponseBody T view(@PathVariable(ID_PARAM) ID id) {
-		return getRepository().findOne(id);
+		T t = getRepository().findOne(id);
+		checkAccess(t, OperationType.VIEW);
+		return t;
 	}
 
 	/**
@@ -203,8 +209,10 @@ public abstract class DomainModelController<T, ID extends Serializable> {
 			if (t == null) {
 				throw new NoSuchItemException(getModelClass(), id);
 			}
+			checkAccess(t, OperationType.UPDATE);
 		} else {
 			t = getModelClass().newInstance();
+			checkAccess(t, OperationType.CREATE);
 		}
 		registerMainItem(t, model);
 		return getModelName() + "/" + EDIT;
@@ -214,12 +222,14 @@ public abstract class DomainModelController<T, ID extends Serializable> {
 	public String add(Model model) throws InstantiationException, IllegalAccessException {
 		return addOrEdit(null, model);
 	}
-
+	
 	protected void registerMainItem(T t, Model model) {
 		model.addAttribute(ITEM, t);
 		model.addAttribute(getModelName(), t);		
 	}
 
+	
+	
 	/**
 	 * Deletes one or more items by their ids. Forwards to list of items upon completion.
 	 * 
@@ -245,27 +255,62 @@ public abstract class DomainModelController<T, ID extends Serializable> {
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET, params = DELETE)
-	public @ResponseBody String deleteWithGet(@RequestParam(value = ID_PARAM, required = true) ID[] ids) {
+	public @ResponseBody String deleteByHttpGet(@RequestParam(value = ID_PARAM, required = true) ID[] ids) {
 		return delete(ids);
 	}
 		
-	@RequestMapping(value = "/{" + ID_PARAM + "}", method = RequestMethod.DELETE)
-	public @ResponseBody String deleteOne(@PathVariable(ID_PARAM) ID id) {
-		getRepository().delete(id);
-		return "OK";
-	}
-
 	@RequestMapping(value = "/{" + ID_PARAM + "}", method = RequestMethod.GET, params = DELETE)
-	public String deleteOneWithGetAndView(@PathVariable(ID_PARAM) ID id) {
+	public String deleteOneByHttpGetAndView(@PathVariable(ID_PARAM) ID id) {
 		deleteOne(id);
 		return "redirect:.";
 	}
 	
 	@RequestMapping(value = {"/{" + ID_PARAM + "}" + XML_SUFFIX, "/{" + ID_PARAM + "}" + JSON_SUFFIX}, 
 			method = RequestMethod.GET, params = DELETE)
-	public @ResponseBody String deleteOneWithGet(@PathVariable(ID_PARAM) ID id) {
+	public @ResponseBody String deleteOneByHttpGet(@PathVariable(ID_PARAM) ID id) {
 		deleteOne(id);
 		return "OK";
 	}
 	
+	@RequestMapping(value = "/{" + ID_PARAM + "}", method = RequestMethod.DELETE)
+	public @ResponseBody String deleteOne(@PathVariable(ID_PARAM) ID id) {
+		checkAccess(id, OperationType.DELETE);
+		getRepository().delete(id);
+		return "OK";
+	}
+
+	public enum OperationType { CREATE, UPDATE, DELETE, VIEW}
+	
+	protected void checkAccess(ID id, OperationType operationType) {
+		T t = getRepository().findOne(id);
+		if (t == null) {
+			throw new NoSuchItemException(getModelClass(), id);
+		}
+		checkAccess(t, operationType);
+	}
+
+	protected void checkAccess(T t, OperationType operationType) {
+	}
+	
+	private Predicate<T> checkViewAccessPredicate = new CheckAccessPredicate(OperationType.VIEW);
+			
+	private class CheckAccessPredicate implements Predicate<T>  {
+
+		private OperationType operationType;
+		
+		public CheckAccessPredicate(OperationType operationType) {
+			this.operationType = operationType;
+		}
+
+		@Override
+		public boolean apply(T input) {
+			try {
+				checkAccess(input, operationType);
+			} catch(Throwable t) {
+				return false;
+			}
+			return true;
+		}
+		
+	};
 }
