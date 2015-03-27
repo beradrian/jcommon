@@ -5,12 +5,15 @@ import java.io.Serializable;
 
 import net.sf.jcommon.util.ReflectUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.repository.support.Repositories;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +30,8 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
 public abstract class DomainModelController<T, ID extends Serializable> {
+
+	protected static final Logger LOG = LoggerFactory.getLogger(DomainModelController.class);
 
 	private static final String FILTER_PARAM = "filter";
 	private static final String X_FILTER = "x-{" + FILTER_PARAM + "}";
@@ -77,19 +82,24 @@ public abstract class DomainModelController<T, ID extends Serializable> {
 	
     @InitBinder
     public void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(getRepositories().getEntityInformationFor(getModelClass()).getIdType(), 
+        final EntityInformation<Object, Serializable> modelEntityInformation = getRepositories().getEntityInformationFor(getModelClass());
+        if (modelEntityInformation == null) {
+        	LOG.error("Cannot found entity information for {}. Have you define a CRUD repository for it?", getModelClass());
+        	throw new IllegalStateException("Cannot found entity information for " + getModelClass() + ". Have you define a CRUD repository for it?");
+        }
+		final Class<Serializable> idType = modelEntityInformation.getIdType();
+		binder.registerCustomEditor(idType, 
         		new PropertyEditorSupport() {
             @Override
             public String getAsText() {
-                return conversionService.convert(getRepositories().getEntityInformationFor(getModelClass())
-                		.getId(getValue()), String.class);
+                return conversionService.convert(modelEntityInformation.getId(getValue()), String.class);
             }
 
             @Override
             public void setAsText(final String text) {
             	@SuppressWarnings("unchecked")
 				T t = getRepository().findOne((ID)conversionService
-            			.convert(text, getRepositories().getEntityInformationFor(getModelClass()).getIdType()));
+            			.convert(text, idType));
                 setValue(t);
             }
         });
@@ -156,6 +166,7 @@ public abstract class DomainModelController<T, ID extends Serializable> {
 	}
 	
 	protected Iterable<T> filter(String filterName) {
+		LOG.trace("Filter {} by {}.", getModelName(), filterName);
 		return Iterables.filter(getRepository().findAll(), checkViewAccessPredicate);
 	}
 

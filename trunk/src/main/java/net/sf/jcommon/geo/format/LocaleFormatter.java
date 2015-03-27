@@ -31,9 +31,9 @@ import org.springframework.format.Formatter;
 public class LocaleFormatter implements Formatter<Locale> {
 
 	private static Pattern L = Pattern.compile("(\\b)(l|L)(\\b)"),
-			LL = Pattern.compile("(\\b)(l|L){2}(\\b))"),
-			LLL = Pattern.compile("(\\b)(l|L){3}(\\b))"),
-			C = Pattern.compile("(\\b)(c|C)(\\b))"),
+			LL = Pattern.compile("(\\b)(l|L){2}(\\b)"),
+			LLL = Pattern.compile("(\\b)(l|L){3}(\\b)"),
+			C = Pattern.compile("(\\b)(c|C)(\\b)"),
 			CC = Pattern.compile("(\\b)(c|C){2}(\\b)"),
 			CCC = Pattern.compile("(\\b)(c|C){3}(\\b)");
 	

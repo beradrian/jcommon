@@ -11,7 +11,7 @@
 
 	<groupId>net.sf.jcommon</groupId>
 	<artifactId>jcommon</artifactId>
-	<version>1.2.5</version>
+	<version>1.2.6</version>
 	<packaging>jar</packaging>
 	<name>jcommon</name>
 	<description>jcommon</description>
@@ -80,6 +80,14 @@
 				<version>2.9</version>
 				<configuration>
 					<wtpversion>2.0</wtpversion>
+				</configuration>
+			</plugin>
+		
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<additionalparam>-Xdoclint:none</additionalparam>
 				</configuration>
 			</plugin>
 		</plugins>
