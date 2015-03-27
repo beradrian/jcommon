@@ -3,10 +3,10 @@ package net.sf.jcommon.spring;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-public class ModelAttributeInterceptor implements HandlerInterceptor {
+public class ModelAttributeInterceptor extends HandlerInterceptorAdapter {
 	
 	private String name;
 	private Object value;
@@ -17,24 +17,12 @@ public class ModelAttributeInterceptor implements HandlerInterceptor {
 	}
 
 	@Override
-	public boolean preHandle(HttpServletRequest request,
-			HttpServletResponse response, Object handler) throws Exception {
-		return true;
-	}
-
-	@Override
 	public void postHandle(HttpServletRequest request,
 			HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
 		if (modelAndView != null) {
 			modelAndView.addObject(name, value);
 		}
-	}
-
-	@Override
-	public void afterCompletion(HttpServletRequest request,
-			HttpServletResponse response, Object handler, Exception ex)
-			throws Exception {
 	}
 
 }

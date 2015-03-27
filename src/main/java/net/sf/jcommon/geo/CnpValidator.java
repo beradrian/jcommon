@@ -11,7 +11,8 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * A class for validating a CNP.
+ * A class for validating a {@linkplain http://en.wikipedia.org/wiki/National_identification_number#Romania CNP}, 
+ * which is the Romanian national personal identification code.
  */
 public class CnpValidator implements ConstraintValidator<Cnp, String> {
 

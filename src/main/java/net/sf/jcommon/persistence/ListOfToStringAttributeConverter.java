@@ -3,14 +3,12 @@ package net.sf.jcommon.persistence;
 import java.util.ArrayList;
 
 import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 
-@Converter
 public abstract class ListOfToStringAttributeConverter<T> implements AttributeConverter<ArrayList<T>, String> {
 
 	private AttributeConverter<T, String> itemConverter;
