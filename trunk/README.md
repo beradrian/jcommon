@@ -14,10 +14,10 @@ To deploy to Maven central repository follow the below steps
                         <username>beradrian</username>
                         <password>${sonatype.nexus.password}</password>
                 </server>
-
+                
 3. *(One time only)* Make sure you have a GPG key generated and uploaded to a key server. See [here](http://blog.sonatype.com/2010/01/how-to-generate-pgp-signatures-with-maven) for more details.
-4. Run `mvn -Dsonatype.nexus.password=<your password> -DperformRelease=true -Dgpg.passphrase=<your.passphrase> deploy`
+4. Run `mvn -Dsonatype.nexus.password=<your password> -DperformRelease=true -Dgpg.passphrase=<your.passphrase> deploy`. Alternatively (if you get a 401 error while uploading) you can run `mvn repository:bundle-create` and then using *Staging Upload* from the UI to upload it.
 5. Go to *Staging Repositories* and select the newly created repository called something like *netsfjcommon-XXXX*
 6. Select the repository and click *Close*. This could take a while.
 7. Refresh the page and after the repository is closed, select it and click *Release*
-8. That's it. Updates to https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22net.sf.jcommon%22 can take up to 2 hours.
+8. That's it. Updates to [central repository](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22net.sf.jcommon%22) can take up to 2 hours.

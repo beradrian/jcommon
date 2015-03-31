@@ -11,7 +11,7 @@
 
 	<groupId>net.sf.jcommon</groupId>
 	<artifactId>jcommon</artifactId>
-	<version>1.2.6</version>
+	<version>1.3.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>jcommon</name>
 	<description>jcommon</description>
